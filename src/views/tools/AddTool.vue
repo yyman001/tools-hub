@@ -7,66 +7,114 @@
       
       <form @submit.prevent="handleSubmit" class="card space-y-6">
         <!-- 工具名称 -->
-        <div>
-          <label for="name" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
-            {{ $t('addTool.toolName') }} *
-          </label>
-          <input
-            id="name"
-            v-model="form.name"
-            type="text"
-            required
-            class="input-field"
-            :placeholder="$t('addTool.toolNamePlaceholder')"
-          >
+        <div class="space-y-4">
+          <div>
+            <label for="name_zh" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+              {{ $t('addTool.toolNameZh') }} *
+            </label>
+            <input
+              id="name_zh"
+              v-model="form.name_zh"
+              type="text"
+              required
+              class="input-field"
+              :placeholder="$t('addTool.toolNameZhPlaceholder')"
+            >
+          </div>
+          <div>
+            <label for="name_en" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+              {{ $t('addTool.toolNameEn') }} *
+            </label>
+            <input
+              id="name_en"
+              v-model="form.name_en"
+              type="text"
+              required
+              class="input-field"
+              :placeholder="$t('addTool.toolNameEnPlaceholder')"
+            >
+          </div>
         </div>
         
         <!-- 工具描述 -->
-        <div>
-          <label for="description" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
-            {{ $t('addTool.toolDescription') }} *
-          </label>
-          <textarea
-            id="description"
-            v-model="form.description"
-            required
-            rows="4"
-            class="input-field"
-            :placeholder="$t('addTool.toolDescriptionPlaceholder')"
-          ></textarea>
+        <div class="space-y-4">
+          <div>
+            <label for="description_zh" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+              {{ $t('addTool.toolDescriptionZh') }} *
+            </label>
+            <textarea
+              id="description_zh"
+              v-model="form.description_zh"
+              required
+              rows="4"
+              class="input-field"
+              :placeholder="$t('addTool.toolDescriptionZhPlaceholder')"
+            ></textarea>
+          </div>
+          <div>
+            <label for="description_en" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+              {{ $t('addTool.toolDescriptionEn') }} *
+            </label>
+            <textarea
+              id="description_en"
+              v-model="form.description_en"
+              required
+              rows="4"
+              class="input-field"
+              :placeholder="$t('addTool.toolDescriptionEnPlaceholder')"
+            ></textarea>
+          </div>
         </div>
         
-        <!-- 工具链接 -->
+        <!-- 工具主页链接 -->
         <div>
-          <label for="url" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
-            {{ $t('addTool.toolUrl') }} *
+          <label for="homepage_url" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+            {{ $t('addTool.homepageUrl') }} *
           </label>
           <input
-            id="url"
-            v-model="form.url"
+            id="homepage_url"
+            v-model="form.homepage_url"
             type="url"
             required
             class="input-field"
-            :placeholder="$t('addTool.toolUrlPlaceholder')"
+            :placeholder="$t('addTool.homepageUrlPlaceholder')"
           >
         </div>
         
         <!-- 分类选择 -->
-        <div>
-          <label for="category" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
-            {{ $t('addTool.category') }} *
-          </label>
-          <select
-            id="category"
-            v-model="form.category"
-            required
-            class="input-field"
-          >
-            <option value="">{{ $t('addTool.selectCategory') }}</option>
-            <option v-for="category in categories" :key="category.id" :value="category.id">
-              {{ category.name }}
-            </option>
-          </select>
+        <div class="space-y-4">
+          <div>
+            <label for="primary_category" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+              {{ $t('addTool.primaryCategory') }} *
+            </label>
+            <select
+              id="primary_category"
+              v-model="form.primary_category_id"
+              required
+              class="input-field"
+              @change="onPrimaryCategoryChange"
+            >
+              <option value="">{{ $t('addTool.selectPrimaryCategory') }}</option>
+              <option v-for="category in primaryCategories" :key="category.id" :value="category.id">
+                {{ $i18n.locale === 'zh' ? category.name_zh : category.name_en }}
+              </option>
+            </select>
+          </div>
+          <div v-if="secondaryCategories.length > 0">
+            <label for="secondary_category" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+              {{ $t('addTool.secondaryCategory') }}
+            </label>
+            <select
+              id="secondary_category"
+              v-model="form.secondary_category_id"
+              class="input-field"
+            >
+              <option value="">{{ $t('addTool.selectSecondaryCategory') }}</option>
+              <option v-for="category in secondaryCategories" :key="category.id" :value="category.id">
+                {{ $i18n.locale === 'zh' ? category.name_zh : category.name_en }}
+              </option>
+            </select>
+          </div>
         </div>
         
         <!-- 标签 -->
@@ -255,12 +303,12 @@
         
         <!-- 截图链接 -->
         <div>
-          <label for="screenshot" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+          <label for="screenshot_url" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
             {{ $t('addTool.screenshot') }}
           </label>
           <input
-            id="screenshot"
-            v-model="form.screenshot"
+            id="screenshot_url"
+            v-model="form.screenshot_url"
             type="url"
             class="input-field"
             :placeholder="$t('addTool.screenshotPlaceholder')"
@@ -318,15 +366,18 @@ const categoryStore = useCategoryStore()
 const { t } = useI18n()
 
 const form = ref({
-  name: '',
-  description: '',
-  url: '',
-  category: '',
+  name_zh: '',
+  name_en: '',
+  description_zh: '',
+  description_en: '',
+  homepage_url: '',
+  primary_category_id: '',
+  secondary_category_id: '',
   tags: [] as string[],
-  screenshot: '',
+  screenshot_url: '',
+  supported_platforms: [] as string[],
   isPublic: true,
-  platforms: [] as { type: string; name: string; description: string }[], // Added platforms
-  downloadLinks: [] as { name: string; type: string; url: string; description: string }[] // Added downloadLinks
+  downloadLinks: [] as { name: string; type: string; url: string; description: string }[]
 })
 
 const tagInput = ref('')
@@ -335,6 +386,12 @@ const isLoading = ref(false)
 const selectedPlatforms = ref<string[]>([])
 
 const categories = computed(() => categoryStore.categories)
+const primaryCategories = computed(() => 
+  categories.value.filter(cat => !cat.parent_id)
+)
+const secondaryCategories = computed(() => 
+  categories.value.filter(cat => cat.parent_id === parseInt(form.value.primary_category_id))
+)
 
 // 平台信息映射
 const platformInfoMap = {
@@ -372,17 +429,21 @@ const removeDownloadLink = (index: number) => {
   form.value.downloadLinks.splice(index, 1)
 }
 
+const onPrimaryCategoryChange = () => {
+  // Reset secondary category when primary category changes
+  form.value.secondary_category_id = ''
+}
+
 const handleSubmit = async () => {
-  if (!form.value.name || !form.value.description || !form.value.url || !form.value.category) {
+  if (!form.value.name_zh || !form.value.name_en || 
+      !form.value.description_zh || !form.value.description_en || 
+      !form.value.homepage_url || !form.value.primary_category_id) {
     errorMessage.value = t('addTool.errors.requiredFields')
     return
   }
 
-  // 转换选中的平台为PlatformInfo结构
-  form.value.platforms = selectedPlatforms.value.map(platformType => ({
-    type: platformType as any,
-    ...platformInfoMap[platformType as keyof typeof platformInfoMap]
-  }))
+  // 设置支持的平台
+  form.value.supported_platforms = selectedPlatforms.value
 
   isLoading.value = true
   errorMessage.value = ''

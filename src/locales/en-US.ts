@@ -9,6 +9,7 @@ export default {
     submit: 'Submit',
     edit: 'Edit',
     delete: 'Delete',
+    remove: 'Remove',
     add: 'Add',
     view: 'View',
     share: 'Share',
@@ -132,14 +133,20 @@ export default {
   addTool: {
     title: 'Add Tool',
     subtitle: 'Share a useful tool with everyone',
-    toolName: 'Tool Name',
-    toolNamePlaceholder: 'Enter tool name',
-    toolDescription: 'Tool Description',
-    toolDescriptionPlaceholder: 'Describe the tool\'s features and functionality',
-    toolUrl: 'Tool URL',
-    toolUrlPlaceholder: 'https://example.com',
-    category: 'Category',
-    selectCategory: 'Select category',
+    toolNameZh: 'Tool Name (Chinese)',
+    toolNameZhPlaceholder: 'Enter tool name in Chinese',
+    toolNameEn: 'Tool Name (English)',
+    toolNameEnPlaceholder: 'Enter tool name in English',
+    toolDescriptionZh: 'Tool Description (Chinese)',
+    toolDescriptionZhPlaceholder: 'Describe the tool\'s features and functionality in Chinese',
+    toolDescriptionEn: 'Tool Description (English)',
+    toolDescriptionEnPlaceholder: 'Describe the tool\'s features and functionality in English',
+    homepageUrl: 'Homepage URL',
+    homepageUrlPlaceholder: 'https://example.com',
+    primaryCategory: 'Primary Category',
+    selectPrimaryCategory: 'Select primary category',
+    secondaryCategory: 'Secondary Category',
+    selectSecondaryCategory: 'Select secondary category (optional)',
     tags: 'Tags',
     tagsPlaceholder: 'Enter tags and press Enter to add',
     screenshot: 'Screenshot URL',
@@ -150,7 +157,6 @@ export default {
       requiredFields: 'Please fill in all required fields',
       submitFailed: 'Submission failed, please try again'
     },
-    // 新增翻译
     platforms: 'Supported Platforms',
     downloadLinks: 'Download Links',
     downloadName: 'Download Source Name',
@@ -164,7 +170,8 @@ export default {
     downloadUrlPlaceholder: 'https://example.com/download',
     downloadDescription: 'Description',
     downloadDescriptionPlaceholder: 'e.g., Extraction code: 1234',
-    addDownloadLink: 'Add Download Link'
+    addDownloadLink: 'Add Download Link',
+    remove: 'Remove'
   },
 
   // Search

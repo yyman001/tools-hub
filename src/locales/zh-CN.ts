@@ -9,6 +9,7 @@ export default {
     submit: '提交',
     edit: '编辑',
     delete: '删除',
+    remove: '移除',
     add: '添加',
     view: '查看',
     share: '分享',
@@ -132,14 +133,20 @@ export default {
   addTool: {
     title: '添加工具',
     subtitle: '分享你发现的好工具',
-    toolName: '工具名称',
-    toolNamePlaceholder: '输入工具名称',
-    toolDescription: '工具描述',
-    toolDescriptionPlaceholder: '详细描述工具的功能和特点',
-    toolUrl: '工具链接',
-    toolUrlPlaceholder: 'https://example.com',
-    category: '分类',
-    selectCategory: '选择分类',
+    toolNameZh: '工具名称（中文）',
+    toolNameZhPlaceholder: '输入工具的中文名称',
+    toolNameEn: '工具名称（英文）',
+    toolNameEnPlaceholder: '输入工具的英文名称',
+    toolDescriptionZh: '工具描述（中文）',
+    toolDescriptionZhPlaceholder: '详细描述工具的功能和特点（中文）',
+    toolDescriptionEn: '工具描述（英文）',
+    toolDescriptionEnPlaceholder: '详细描述工具的功能和特点（英文）',
+    homepageUrl: '工具主页',
+    homepageUrlPlaceholder: 'https://example.com',
+    primaryCategory: '主分类',
+    selectPrimaryCategory: '选择主分类',
+    secondaryCategory: '二级分类',
+    selectSecondaryCategory: '选择二级分类（可选）',
     tags: '标签',
     tagsPlaceholder: '输入标签后按回车添加',
     screenshot: '截图链接',
@@ -150,7 +157,6 @@ export default {
       requiredFields: '请填写所有必填字段',
       submitFailed: '提交失败，请重试'
     },
-    // 新增翻译
     platforms: '支持平台',
     downloadLinks: '下载地址',
     downloadName: '下载源名称',
@@ -164,7 +170,8 @@ export default {
     downloadUrlPlaceholder: 'https://example.com/download',
     downloadDescription: '描述信息',
     downloadDescriptionPlaceholder: '如：提取码：1234',
-    addDownloadLink: '添加下载地址'
+    addDownloadLink: '添加下载地址',
+    remove: '移除'
   },
 
   // 搜索

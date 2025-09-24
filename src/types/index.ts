@@ -28,32 +28,70 @@ export interface DownloadLink {
 // 工具数据结构
 export interface Tool {
     id: string
-    name: string
-    description: string
-    url: string
-    category: string
+    name_zh: string                 // 中文名称
+    name_en: string                 // 英文名称
+    description_zh: string          // 中文描述
+    description_en: string          // 英文描述
+    homepage_url: string            // 工具主页链接
+    download_url?: string           // 主要下载地址
+    screenshot_url?: string         // 截图链接
+    supported_platforms: string[]   // 支持的平台（JSON数组）
+    primary_category_id: number     // 主分类ID
+    secondary_category_id?: number  // 二级分类ID（可选）
+    primaryCategory?: Category      // 主分类详细信息
+    secondaryCategory?: Category    // 二级分类详细信息
     tags: string[]
-    screenshot?: string
     rating: number
-    createdAt: string
-    updatedAt: string
+    status: number                  // 状态：1-启用，0-禁用
+    created_at: string
+    updated_at: string
     userId: string
     isPublic: boolean
     viewCount: number
     likeCount: number
-    // 新增属性
-    platforms: PlatformInfo[]        // 支持的平台详细信息
-    downloadLinks: DownloadLink[]    // 备用下载地址
+    // 扩展属性（用于前端展示）
+    downloadLinks: DownloadLink[]   // 备用下载地址
 }
 
-// 分类数据结构
+// 层级分类数据结构
 export interface Category {
-    id: string
-    name: string
-    description: string
-    icon: string
-    toolCount: number
-    color: string
+    id: number
+    name_zh: string                 // 中文名称
+    name_en: string                 // 英文名称
+    parent_id: number | null        // 父分类ID
+    sort_order: number              // 排序
+    status: number                  // 状态：1-启用，0-禁用
+    created_at: string
+    children?: Category[]
+    // UI相关属性
+    icon?: string
+    color?: string
+    toolCount?: number
+}
+
+// 分类树结构
+export interface CategoryTree {
+    categories: Category[]
+    totalCount: number
+}
+
+// 分类路径信息
+export interface CategoryPath {
+    id: number
+    name_zh: string
+    name_en: string
+}
+
+// 分类验证结果
+export interface CategoryValidation {
+    isValid: boolean
+    errors: string[]
+}
+
+// 分类操作选项
+export interface CategoryDeleteOptions {
+    action: 'delete_all' | 'move_tools'
+    targetCategoryId?: number
 }
 
 // 用户数据结构
@@ -90,6 +128,36 @@ export interface ApiResponse<T> {
     data: T
 }
 
+// 分类API响应类型
+export interface CategoryCreateRequest {
+    name_zh: string
+    name_en: string
+    parent_id?: number
+    sort_order?: number
+}
+
+export interface CategoryUpdateRequest {
+    name_zh?: string
+    name_en?: string
+    parent_id?: number
+    sort_order?: number
+}
+
+export interface CategoryDeleteResponse {
+    success: boolean
+    message: string
+    affectedTools?: number
+}
+
+// 分类工具查询参数
+export interface CategoryToolsParams {
+    includeSubcategories?: boolean
+    page?: number
+    pageSize?: number
+    sortBy?: string
+    sortOrder?: 'asc' | 'desc'
+}
+
 // 分页数据结构
 export interface PaginatedData<T> {
     items: T[]
@@ -102,7 +170,8 @@ export interface PaginatedData<T> {
 // 搜索参数
 export interface SearchParams {
     keyword?: string
-    category?: string
+    categoryId?: number             // 修改为数字类型
+    includeSubcategories?: boolean  // 是否包含子分类
     tags?: string[]
     page?: number
     pageSize?: number
@@ -112,14 +181,16 @@ export interface SearchParams {
 
 // 工具表单数据
 export interface ToolFormData {
-    name: string
-    description: string
-    url: string
-    category: string
+    name_zh: string                 // 中文名称
+    name_en: string                 // 英文名称
+    description_zh: string          // 中文描述
+    description_en: string          // 英文描述
+    homepage_url: string            // 工具主页链接
+    primary_category_id: string     // 主分类ID（表单中为字符串）
+    secondary_category_id?: string  // 二级分类ID（可选）
     tags: string[]
-    screenshot?: string
+    screenshot_url?: string         // 截图链接
+    supported_platforms: string[]   // 支持的平台
     isPublic: boolean
-    // 新增表单字段
-    platforms: PlatformType[]
-    downloadLinks: DownloadLink[]
+    downloadLinks: DownloadLink[]   // 下载地址
 }

@@ -41,15 +41,34 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/auth/Login.vue'),
+    component: () => import('@/views/auth/LoginUnified.vue'),
     meta: { title: '登录' }
   },
   {
     path: '/register',
     name: 'Register',
-    component: () => import('@/views/auth/Register.vue'),
+    component: () => import('@/views/auth/RegisterUnified.vue'),
     meta: { title: '注册' }
   },
+  {
+    path: '/email-verification',
+    name: 'EmailVerification',
+    component: () => import('@/views/auth/EmailVerification.vue'),
+    meta: { title: '邮箱验证' }
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: () => import('@/views/auth/ForgotPasswordUnified.vue'),
+    meta: { title: '忘记密码' }
+  },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: () => import('@/views/auth/ResetPasswordUnified.vue'),
+    meta: { title: '重置密码' }
+  },
+
   {
     path: '/profile',
     name: 'Profile',

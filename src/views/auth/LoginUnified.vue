@@ -46,6 +46,14 @@
           </div>
         </div>
 
+        <!-- 认证模式显示 -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+          <p class="text-xs text-blue-800 dark:text-blue-200">
+            当前认证模式: {{ authMode.toUpperCase() }}
+            {{ authMode === 'http' ? '(HTTP REST API)' : '(Supabase JS SDK)' }}
+          </p>
+        </div>
+
         <div v-if="errorMessage" class="text-red-600 dark:text-red-400 text-sm text-center">
           {{ errorMessage }}
         </div>
@@ -81,11 +89,11 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useUserStore } from '@/stores'
+import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
-const userStore = useUserStore()
 const { t } = useI18n()
+const { login, isLoading, authMode } = useAuth()
 
 const form = ref({
   email: '',
@@ -93,7 +101,6 @@ const form = ref({
 })
 
 const errorMessage = ref('')
-const isLoading = ref(false)
 
 const handleLogin = async () => {
   // 表单验证
@@ -102,7 +109,7 @@ const handleLogin = async () => {
     return
   }
 
-  // 简单的邮箱格式验证
+  // 邮箱格式验证
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(form.value.email)) {
     errorMessage.value = '请输入有效的邮箱地址'
@@ -115,11 +122,10 @@ const handleLogin = async () => {
     return
   }
 
-  isLoading.value = true
   errorMessage.value = ''
 
   try {
-    const result = await userStore.login(form.value.email, form.value.password)
+    const result = await login(form.value.email, form.value.password)
     
     if (result.success) {
       // 登录成功，跳转到首页或之前的页面
@@ -131,8 +137,6 @@ const handleLogin = async () => {
   } catch (error: any) {
     console.error('登录处理异常:', error)
     errorMessage.value = '登录过程中发生错误，请重试'
-  } finally {
-    isLoading.value = false
   }
 }
 </script>

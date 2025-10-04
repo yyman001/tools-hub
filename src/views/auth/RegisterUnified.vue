@@ -76,8 +76,20 @@
           </div>
         </div>
 
+        <!-- 认证模式显示 -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+          <p class="text-xs text-blue-800 dark:text-blue-200">
+            当前认证模式: {{ authMode.toUpperCase() }}
+            {{ authMode === 'http' ? '(HTTP REST API)' : '(Supabase JS SDK)' }}
+          </p>
+        </div>
+
         <div v-if="errorMessage" class="text-red-600 dark:text-red-400 text-sm text-center">
           {{ errorMessage }}
+        </div>
+
+        <div v-if="successMessage" class="text-green-600 dark:text-green-400 text-sm text-center">
+          {{ successMessage }}
         </div>
 
         <div>
@@ -108,12 +120,12 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useUserStore } from '@/stores'
+import { useAuth } from '@/composables/useAuth'
 import RegistrationSuccess from '@/components/RegistrationSuccess.vue'
 
 const router = useRouter()
-const userStore = useUserStore()
 const { t } = useI18n()
+const { register, isLoading, authMode } = useAuth()
 
 const form = ref({
   username: '',
@@ -123,10 +135,9 @@ const form = ref({
 })
 
 const errorMessage = ref('')
-const isLoading = ref(false)
+const successMessage = ref('')
 const showSuccessModal = ref(false)
 const successTitle = ref('')
-const successMessage = ref('')
 const needsVerification = ref(false)
 
 const handleRegister = async () => {
@@ -153,11 +164,11 @@ const handleRegister = async () => {
     return
   }
 
-  isLoading.value = true
   errorMessage.value = ''
+  successMessage.value = ''
 
   try {
-    const result = await userStore.register(
+    const result = await register(
       form.value.username,
       form.value.email,
       form.value.password
@@ -168,13 +179,8 @@ const handleRegister = async () => {
       needsVerification.value = result.needsVerification || false
       
       if (result.needsVerification) {
-        if (result.isExistingUser) {
-          successTitle.value = '邮箱已注册'
-          successMessage.value = '该邮箱已注册但可能还未验证。我们已重新发送验证邮件，请检查您的邮箱（包括垃圾邮件文件夹）。'
-        } else {
-          successTitle.value = '注册成功！'
-          successMessage.value = '我们已向您的邮箱发送了验证邮件，请点击邮件中的链接完成验证。'
-        }
+        successTitle.value = '注册成功！'
+        successMessage.value = '我们已向您的邮箱发送了验证邮件，请点击邮件中的链接完成验证。'
       } else {
         successTitle.value = '注册并登录成功！'
         successMessage.value = '欢迎加入 Tools Hub！您现在可以开始使用所有功能了。'
@@ -182,21 +188,11 @@ const handleRegister = async () => {
       
       showSuccessModal.value = true
     } else {
-      // 检查是否应该跳转到登录页面
-      if (result.shouldRedirectToLogin) {
-        errorMessage.value = result.message + ' '
-        setTimeout(() => {
-          router.push('/login')
-        }, 3000)
-      } else {
-        errorMessage.value = result.message || t('auth.errors.registerFailed')
-      }
+      errorMessage.value = result.message || t('auth.errors.registerFailed')
     }
   } catch (error: any) {
     console.error('注册处理异常:', error)
     errorMessage.value = '注册过程中发生错误，请重试'
-  } finally {
-    isLoading.value = false
   }
 }
 </script>

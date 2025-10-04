@@ -76,8 +76,21 @@
           </div>
         </div>
 
+        <!-- 调试信息 -->
+        <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3">
+          <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">调试信息:</p>
+          <div class="text-xs space-y-1">
+            <div>API状态: {{ apiStatus }}</div>
+            <div v-if="debugInfo">{{ debugInfo }}</div>
+          </div>
+        </div>
+
         <div v-if="errorMessage" class="text-red-600 dark:text-red-400 text-sm text-center">
           {{ errorMessage }}
+        </div>
+
+        <div v-if="successMessage" class="text-green-600 dark:text-green-400 text-sm text-center">
+          {{ successMessage }}
         </div>
 
         <div>
@@ -91,16 +104,6 @@
         </div>
       </form>
     </div>
-    
-    <!-- 注册成功提示 -->
-    <RegistrationSuccess
-      :show="showSuccessModal"
-      :title="successTitle"
-      :message="successMessage"
-      :needs-verification="needsVerification"
-      :email="form.email"
-      @close="showSuccessModal = false"
-    />
   </div>
 </template>
 
@@ -108,11 +111,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useUserStore } from '@/stores'
-import RegistrationSuccess from '@/components/RegistrationSuccess.vue'
 
 const router = useRouter()
-const userStore = useUserStore()
 const { t } = useI18n()
 
 const form = ref({
@@ -123,14 +123,54 @@ const form = ref({
 })
 
 const errorMessage = ref('')
-const isLoading = ref(false)
-const showSuccessModal = ref(false)
-const successTitle = ref('')
 const successMessage = ref('')
-const needsVerification = ref(false)
+const isLoading = ref(false)
+const apiStatus = ref('等待中...')
+const debugInfo = ref('')
 
+let supabaseUrl = ''
+let supabaseAnonKey = ''
+
+// 使用HTTP API注册
+const registerViaHTTP = async (email: string, password: string, username: string) => {
+  try {
+    console.log('📡 使用HTTP API注册...')
+    
+    const response = await fetch(`${supabaseUrl}/auth/v1/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': supabaseAnonKey
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+        data: {
+          username: username
+        }
+      })
+    })
+    
+    console.log('HTTP注册响应状态:', response.status)
+    
+    if (!response.ok) {
+      const errorData = await response.text()
+      console.error('HTTP注册错误:', errorData)
+      throw new Error(`HTTP ${response.status}: ${errorData}`)
+    }
+    
+    const data = await response.json()
+    console.log('HTTP注册成功响应:', data)
+    
+    return { data, error: null }
+  } catch (error: any) {
+    console.error('HTTP注册异常:', error)
+    return { data: null, error }
+  }
+}
+
+// 处理注册
 const handleRegister = async () => {
-  // 表单验证
   if (!form.value.username || !form.value.email || !form.value.password) {
     errorMessage.value = t('auth.errors.required')
     return
@@ -155,48 +195,74 @@ const handleRegister = async () => {
 
   isLoading.value = true
   errorMessage.value = ''
+  successMessage.value = ''
+  apiStatus.value = '注册中...'
 
   try {
-    const result = await userStore.register(
-      form.value.username,
+    console.log('🔐 开始HTTP模式注册:', form.value.email)
+    
+    const { data, error } = await registerViaHTTP(
       form.value.email,
-      form.value.password
+      form.value.password,
+      form.value.username
     )
     
-    if (result.success) {
-      // 显示成功提示
-      needsVerification.value = result.needsVerification || false
+    if (error) {
+      console.error('❌ HTTP注册失败:', error)
+      apiStatus.value = '注册失败'
+      errorMessage.value = 'HTTP注册失败：' + error.message
+    } else if (data) {
+      console.log('✅ HTTP注册成功!')
+      apiStatus.value = '注册成功'
       
-      if (result.needsVerification) {
-        if (result.isExistingUser) {
-          successTitle.value = '邮箱已注册'
-          successMessage.value = '该邮箱已注册但可能还未验证。我们已重新发送验证邮件，请检查您的邮箱（包括垃圾邮件文件夹）。'
-        } else {
-          successTitle.value = '注册成功！'
-          successMessage.value = '我们已向您的邮箱发送了验证邮件，请点击邮件中的链接完成验证。'
-        }
-      } else {
-        successTitle.value = '注册并登录成功！'
-        successMessage.value = '欢迎加入 Tools Hub！您现在可以开始使用所有功能了。'
-      }
-      
-      showSuccessModal.value = true
-    } else {
-      // 检查是否应该跳转到登录页面
-      if (result.shouldRedirectToLogin) {
-        errorMessage.value = result.message + ' '
+      if (data.session) {
+        // 注册成功并自动登录
+        successMessage.value = '注册成功！正在跳转...'
         setTimeout(() => {
-          router.push('/login')
-        }, 3000)
+          router.push('/')
+        }, 2000)
       } else {
-        errorMessage.value = result.message || t('auth.errors.registerFailed')
+        // 需要邮箱验证
+        successMessage.value = '注册成功！请检查您的邮箱进行验证。'
+        setTimeout(() => {
+          router.push({
+            name: 'EmailVerification',
+            query: { email: form.value.email }
+          })
+        }, 3000)
       }
+    } else {
+      console.error('❌ 注册响应无效')
+      apiStatus.value = '响应无效'
+      errorMessage.value = '注册响应无效，请重试'
     }
   } catch (error: any) {
-    console.error('注册处理异常:', error)
+    console.error('❌ 注册处理异常:', error)
+    apiStatus.value = '异常错误'
     errorMessage.value = '注册过程中发生错误，请重试'
   } finally {
     isLoading.value = false
   }
 }
+
+// 初始化
+const init = () => {
+  // 获取环境变量
+  supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+  supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+  
+  if (!supabaseUrl || !supabaseAnonKey) {
+    apiStatus.value = '❌ 缺少环境变量'
+    errorMessage.value = '缺少Supabase配置'
+    return
+  }
+  
+  debugInfo.value = `URL: ${supabaseUrl.substring(0, 30)}...`
+  apiStatus.value = '准备就绪'
+  
+  console.log('📄 HTTP注册页面初始化完成')
+}
+
+// 页面加载时初始化
+init()
 </script>

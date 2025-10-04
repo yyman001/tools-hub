@@ -395,13 +395,13 @@ const secondaryCategories = computed(() =>
 
 // 平台信息映射
 const platformInfoMap = {
-  windows: { name: 'Windows', description: '支持Windows 10/11', icon: '🪟' },
-  macos: { name: 'macOS', description: '支持macOS 10.15+', icon: '🍎' },
-  linux: { name: 'Linux', description: '支持主流Linux发行版', icon: '🐧' },
-  android: { name: 'Android', description: '支持Android 6.0+', icon: '🤖' },
-  ios: { name: 'iOS', description: '支持iOS 13.0+', icon: '📱' },
-  web: { name: '网页版', description: '基于浏览器，无需下载', icon: '🌐' },
-  'cross-platform': { name: '跨平台', description: '支持多个平台', icon: '🔄' }
+  windows: { name: 'Windows', description: '支持Windows 10/11'},
+  macos: { name: 'macOS', description: '支持macOS 10.15+'},
+  linux: { name: 'Linux', description: '支持主流Linux发行版' },
+  android: { name: 'Android', description: '支持Android 6.0+' },
+  ios: { name: 'iOS', description: '支持iOS 13.0+'},
+  web: { name: '网页版', description: '基于浏览器，无需下载' },
+  'cross-platform': { name: '跨平台', description: '支持多个平台' }
 }
 
 const addTag = () => {

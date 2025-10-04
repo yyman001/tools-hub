@@ -271,8 +271,12 @@ const handleSearch = () => {
   }
 }
 
-const handleLogout = () => {
-  userStore.logout()
+const handleLogout = async () => {
+  // 使用统一的登出方法
+  const { useAuth } = await import('@/composables/useAuth')
+  const { logout } = useAuth()
+  
+  await logout()
   showUserMenu.value = false
   router.push('/')
 }

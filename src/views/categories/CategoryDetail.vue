@@ -51,12 +51,7 @@
             </div>
             
             <!-- 统计信息 - 右侧显示 -->
-            <div class="hidden md:flex items-center space-x-6 bg-white/10 backdrop-blur-sm rounded-xl px-6 py-3">
-              <div class="text-center">
-                <div class="text-xl font-bold text-white">{{ category.toolCount }}</div>
-                <div class="text-xs text-white/80">{{ $t('categories.toolsCount') }}</div>
-              </div>
-            </div>
+
           </div>
         </div>
       </div>
@@ -68,7 +63,7 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
         <div>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-slate-100">{{ category.name }} {{ $t('nav.tools') }}</h2>
-          <p class="text-muted mt-1">{{ $t('categories.discover') }} {{ category.toolCount }} {{ $t('categories.qualityTools') }}</p>
+          <p class="text-muted mt-1">{{ $t('categories.discover') }}</p>
         </div>
         
         <div class="flex items-center space-x-4">

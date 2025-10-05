@@ -18,7 +18,7 @@
             <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-primary">{{ category.name }}</h3>
             <p class="text-muted mb-4">{{ category.description }}</p>
             <div class="text-sm text-subtle">
-              {{ category.toolCount }} {{ $t('home.toolsCount') }}
+              {{ $t('categories.discover') }}
             </div>
           </div>
         </div>

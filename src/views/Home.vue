@@ -33,34 +33,7 @@
         </div>
       </section>
 
-      <!-- 热门分类 -->
-      <section class="py-20 bg-surface">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2
-            class="text-3xl font-bold text-center mb-12 text-gray-900 dark:text-primary"
-          >
-            {{ $t("home.popularCategories") }}
-          </h2>
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-            <div
-              v-for="category in stats.popularCategories"
-              :key="category.id"
-              class="card text-center hover:shadow-md hover-bg transition-all duration-200 cursor-pointer"
-              @click="$router.push(`/tools?category=${category.id}`)"
-            >
-              <div class="text-4xl mb-4">{{ category.icon }}</div>
-              <h3
-                class="font-semibold mb-2 text-gray-900 dark:text-primary"
-              >
-                {{ category.name }}
-              </h3>
-              <p class="text-sm text-muted">
-                {{ category.toolCount }} {{ $t("home.toolsCount") }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       <!-- 最新工具 -->
       <section class="py-20 bg-elevated">
@@ -123,7 +96,6 @@ const router = useRouter();
 
 const searchKeyword = ref("");
 const stats = ref({
-  popularCategories: [],
   recentTools: [],
 });
 

@@ -54,7 +54,6 @@
             >
               <div class="flex justify-between items-center">
                 <span>{{ $t('tools.allCategories') }}</span>
-                <span class="text-xs text-gray-500">{{ totalToolsCount }}</span>
               </div>
             </div>
             
@@ -83,7 +82,7 @@
                   <span v-else class="w-3"></span>
                   <span>{{ getCategoryName(category) }}</span>
                 </div>
-                <span class="text-xs text-gray-500">{{ category.toolCount || 0 }}</span>
+
               </div>
               
               <!-- 二级分类 -->
@@ -103,7 +102,7 @@
                   ]"
                 >
                   <span>{{ getCategoryName(subCategory) }}</span>
-                  <span class="text-xs text-gray-500">{{ subCategory.toolCount || 0 }}</span>
+
                 </div>
               </div>
             </div>
@@ -251,10 +250,7 @@ const currentCategoryName = computed(() => {
   return category ? getCategoryName(category) : t('tools.allCategories')
 })
 
-// 总工具数量
-const totalToolsCount = computed(() => {
-  return categories.value.reduce((sum, category) => sum + (category.toolCount || 0), 0)
-})
+
 
 // 过滤后的工具数量
 const filteredToolsCount = computed(() => total.value)

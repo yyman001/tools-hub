@@ -1,6 +1,6 @@
 import { createI18n } from 'vue-i18n'
-import zhCN from './zh-CN'
-import enUS from './en-US'
+import zhCN from './zh-CN.json'
+import enUS from './en-US.json'
 
 // 支持的语言列表
 export const SUPPORT_LOCALES = [
@@ -12,10 +12,12 @@ export const SUPPORT_LOCALES = [
     name: 'English',
     value: 'en-US'
   }
-]
+] as const
 
 // 获取浏览器语言
 function getBrowserLocale(): string {
+  if (typeof window === 'undefined') return 'zh-CN'
+  
   const navigatorLocale = navigator.language || (navigator as any).userLanguage
   
   if (navigatorLocale) {
@@ -32,25 +34,45 @@ function getBrowserLocale(): string {
 
 // 获取存储的语言设置
 function getStoredLocale(): string {
-  return localStorage.getItem('locale') || getBrowserLocale()
+  if (typeof window === 'undefined') return 'zh-CN'
+  
+  try {
+    return localStorage.getItem('locale') || getBrowserLocale()
+  } catch {
+    return getBrowserLocale()
+  }
 }
+
+// 语言消息对象
+const messages = {
+  'zh-CN': zhCN,
+  'en-US': enUS
+} as const
 
 // 创建 i18n 实例
 const i18n = createI18n({
   legacy: false,
   locale: getStoredLocale(),
   fallbackLocale: 'zh-CN',
-  messages: {
-    'zh-CN': zhCN,
-    'en-US': enUS
-  }
+  messages,
+  // 添加更严格的类型检查
+  missingWarn: false,
+  fallbackWarn: false,
+  // 确保在 SSR 环境下正常工作
+  globalInjection: true
 })
 
 // 切换语言的函数
 export function setLocale(locale: string) {
-  i18n.global.locale.value = locale as any
-  localStorage.setItem('locale', locale)
-  document.documentElement.lang = locale
+  if (typeof window === 'undefined') return
+  
+  try {
+    i18n.global.locale.value = locale as 'zh-CN' | 'en-US'
+    localStorage.setItem('locale', locale)
+    document.documentElement.lang = locale
+  } catch (error) {
+    console.warn('Failed to set locale:', error)
+  }
 }
 
 // 获取当前语言

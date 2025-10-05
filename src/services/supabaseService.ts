@@ -57,7 +57,7 @@ export class SupabaseService {
     if (error) throw error
 
     return {
-      items: data?.map(this.transformToolRow) || [],
+      items: data?.map(SupabaseService.transformToolRow) || [],
       total: count || 0,
       page,
       pageSize,
@@ -80,7 +80,7 @@ export class SupabaseService {
       .single()
 
     if (error) throw error
-    return this.transformToolRow(data)
+    return SupabaseService.transformToolRow(data)
   }
 
   static async createTool(toolData: ToolFormData) {
@@ -128,7 +128,7 @@ export class SupabaseService {
     }
 
     // 重新获取完整的工具数据
-    return await this.getToolById(tool.id.toString())
+    return await SupabaseService.getToolById(tool.id.toString())
   }
 
   // 添加标签到工具
@@ -201,7 +201,7 @@ export class SupabaseService {
       .order('sort_order', { ascending: true })
 
     if (error) throw error
-    return data?.map(this.transformCategoryRow) || []
+    return data?.map(SupabaseService.transformCategoryRow) || []
   }
 
   static async getCategoryById(id: string) {
@@ -213,11 +213,11 @@ export class SupabaseService {
       .single()
 
     if (error) throw error
-    return this.transformCategoryRow(data)
+    return SupabaseService.transformCategoryRow(data)
   }
 
   static async getCategoryTree() {
-    const categories = await this.getCategories()
+    const categories = await SupabaseService.getCategories()
     
     // 构建分类树
     const categoryMap = new Map<number, Category>()
@@ -248,39 +248,58 @@ export class SupabaseService {
 
   // 数据转换方法
   private static transformToolRow(row: any): Tool {
+    if (!row) {
+      throw new Error('Invalid tool data: row is null or undefined')
+    }
+
     // 提取标签
     const tags = row.tool_tags?.map((tt: any) => tt.tags?.name).filter(Boolean) || []
     
     // 提取下载链接并排序
     const downloadLinks = (row.download_links || [])
-      .sort((a: any, b: any) => a.sort_order - b.sort_order)
+      .sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0))
       .map((link: any) => ({
-        name: link.name,
-        url: link.url,
-        type: link.type,
-        description: link.description,
-        platform: link.platform
+        name: link.name || '',
+        url: link.url || '',
+        type: link.type || 'other',
+        description: link.description || '',
+        platform: link.platform || ''
       }))
 
+    // 安全解析 supported_platforms
+    let supportedPlatforms: string[] = []
+    try {
+      if (row.supported_platforms) {
+        if (typeof row.supported_platforms === 'string') {
+          supportedPlatforms = JSON.parse(row.supported_platforms)
+        } else if (Array.isArray(row.supported_platforms)) {
+          supportedPlatforms = row.supported_platforms
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to parse supported_platforms:', error)
+      supportedPlatforms = []
+    }
+
     return {
-      id: row.id.toString(),
-      name_zh: row.name_zh,
-      name_en: row.name_en,
-      description_zh: row.description_zh,
-      description_en: row.description_en,
+      id: row.id?.toString() || '',
+      name_zh: row.name_zh || '',
+      name_en: row.name_en || '',
+      description_zh: row.description_zh || '',
+      description_en: row.description_en || '',
       homepage_url: row.homepage_url || '',
-      download_url: row.download_url,
-      screenshot_url: row.screenshot_url,
-      supported_platforms: row.supported_platforms ? JSON.parse(row.supported_platforms) : [],
-      primary_category_id: row.primary_category_id,
-      secondary_category_id: row.secondary_category_id,
-      primaryCategory: row.primaryCategory ? this.transformCategoryRow(row.primaryCategory) : undefined,
-      secondaryCategory: row.secondaryCategory ? this.transformCategoryRow(row.secondaryCategory) : undefined,
+      download_url: row.download_url || '',
+      screenshot_url: row.screenshot_url || '',
+      supported_platforms: supportedPlatforms,
+      primary_category_id: row.primary_category_id || 0,
+      secondary_category_id: row.secondary_category_id || null,
+      primaryCategory: row.primaryCategory ? SupabaseService.transformCategoryRow(row.primaryCategory) : undefined,
+      secondaryCategory: row.secondaryCategory ? SupabaseService.transformCategoryRow(row.secondaryCategory) : undefined,
       tags: tags,
-      rating: 0, // TODO: 实现评分系统
-      status: row.status,
-      created_at: row.created_at,
-      updated_at: row.updated_at,
+      rating: row.rating || 0,
+      status: row.status || 0,
+      created_at: row.created_at || '',
+      updated_at: row.updated_at || '',
       userId: row.user_id || '',
       isPublic: row.status === 1,
       viewCount: row.view_count || 0,
@@ -289,15 +308,19 @@ export class SupabaseService {
     }
   }
 
-  private static transformCategoryRow(row: CategoryRow): Category {
+  private static transformCategoryRow(row: CategoryRow | any): Category {
+    if (!row) {
+      throw new Error('Invalid category data: row is null or undefined')
+    }
+
     return {
-      id: row.id,
-      name_zh: row.name_zh,
-      name_en: row.name_en,
-      parent_id: row.parent_id,
-      sort_order: row.sort_order,
-      status: row.status,
-      created_at: row.created_at,
+      id: row.id || 0,
+      name_zh: row.name_zh || '',
+      name_en: row.name_en || '',
+      parent_id: row.parent_id || null,
+      sort_order: row.sort_order || 0,
+      status: row.status || 0,
+      created_at: row.created_at || '',
       children: []
     }
   }

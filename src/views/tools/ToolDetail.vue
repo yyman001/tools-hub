@@ -239,11 +239,12 @@
               
               <!-- 平台支持 -->
               <div
+                v-if="tool.supported_platforms && tool.supported_platforms.length > 0"
                 class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-default last:border-b-0"
               >
                 <span class="text-sm text-gray-600 dark:text-muted">{{ $t('tools.platforms') }}</span>
                 <span class="text-sm font-medium text-primary">
-                  {{ tool.platforms.map(p => p.name).join('、') }}
+                  {{ tool.supported_platforms.join('、') }}
                 </span>
               </div>
               

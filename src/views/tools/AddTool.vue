@@ -81,6 +81,23 @@
           >
         </div>
         
+        <!-- 版本号 -->
+        <div>
+          <label for="version" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+            {{ $t('addTool.version') }}
+          </label>
+          <input
+            id="version"
+            v-model="form.version"
+            type="text"
+            class="input-field"
+            :placeholder="$t('addTool.versionPlaceholder')"
+          >
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            {{ $t('addTool.versionHint') }}
+          </p>
+        </div>
+        
         <!-- 分类选择 -->
         <div class="space-y-4">
           <div>
@@ -125,7 +142,7 @@
           <div class="space-y-2">
             <input
               v-model="tagInput"
-              @keyup.enter="addTag"
+              @keydown.enter.prevent="addTag"
               type="text"
               class="input-field"
               :placeholder="$t('addTool.tagsPlaceholder')"
@@ -163,7 +180,7 @@
                   value="windows"
                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                 >
-                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">🪟 Windows</span>
+                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">Windows</span>
               </label>
               <label class="flex items-center">
                 <input
@@ -172,7 +189,7 @@
                   value="macos"
                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                 >
-                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">🍎 macOS</span>
+                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">macOS</span>
               </label>
               <label class="flex items-center">
                 <input
@@ -181,7 +198,7 @@
                   value="linux"
                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                 >
-                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">🐧 Linux</span>
+                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">Linux</span>
               </label>
               <label class="flex items-center">
                 <input
@@ -190,7 +207,7 @@
                   value="android"
                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                 >
-                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">🤖 Android</span>
+                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">Android</span>
               </label>
               <label class="flex items-center">
                 <input
@@ -199,7 +216,7 @@
                   value="ios"
                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                 >
-                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">📱 iOS</span>
+                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">iOS</span>
               </label>
               <label class="flex items-center">
                 <input
@@ -208,7 +225,7 @@
                   value="web"
                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                 >
-                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">🌐 网页</span>
+                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">网页</span>
               </label>
               <label class="flex items-center">
                 <input
@@ -217,7 +234,7 @@
                   value="cross-platform"
                   class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                 >
-                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">🔄 跨平台</span>
+                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">跨平台</span>
               </label>
             </div>
           </div>
@@ -371,6 +388,7 @@ const form = ref({
   description_zh: '',
   description_en: '',
   homepage_url: '',
+  version: '',
   primary_category_id: '',
   secondary_category_id: '',
   tags: [] as string[],

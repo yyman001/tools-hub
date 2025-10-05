@@ -55,10 +55,12 @@
     "addTool": "添加工具",
     "toolDetail": "工具详情",
     "basicInfo": "基本信息",
-
+    "version": "版本",
+    "latest": "最新",
     "views": "浏览量",
     "likes": "点赞数",
     "createdAt": "创建时间",
+    "lastUpdated": "最后更新",
 
     "quickActions": "快速操作",
     "reportIssue": "报告问题",
@@ -213,6 +215,9 @@
     "toolDescriptionEnPlaceholder": "详细描述工具的功能和特点（英文）",
     "homepageUrl": "工具主页",
     "homepageUrlPlaceholder": "https://example.com",
+    "version": "版本号",
+    "versionPlaceholder": "如：v1.0.0、2024.1、最新版",
+    "versionHint": "留空将显示为\"最新\"",
     "primaryCategory": "主分类",
     "selectPrimaryCategory": "选择主分类",
     "secondaryCategory": "二级分类",

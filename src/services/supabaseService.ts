@@ -96,6 +96,7 @@ export class SupabaseService {
       description_zh: toolData.description_zh,
       description_en: toolData.description_en,
       homepage_url: toolData.homepage_url,
+      version: toolData.version || null,
       screenshot_url: toolData.screenshot_url,
       supported_platforms: JSON.stringify(toolData.supported_platforms),
       primary_category_id: parseInt(toolData.primary_category_id),
@@ -134,37 +135,70 @@ export class SupabaseService {
   // 添加标签到工具
   static async addTagsToTool(toolId: number, tagNames: string[]) {
     for (const tagName of tagNames) {
-      // 先尝试获取或创建标签
-      let { data: tag, error } = await supabase
-        .from('tags')
-        .select('id')
-        .eq('name', tagName.trim())
-        .single()
+      const trimmedTagName = tagName.trim()
+      if (!trimmedTagName) continue // 跳过空标签
 
-      if (error && error.code === 'PGRST116') {
-        // 标签不存在，创建新标签
-        const { data: newTag, error: createError } = await supabase
+      try {
+        // 先尝试获取标签，使用更宽松的查询
+        let { data: tags, error: queryError } = await supabase
           .from('tags')
-          .insert({ name: tagName.trim() })
           .select('id')
-          .single()
+          .eq('name', trimmedTagName)
+          .limit(1)
 
-        if (createError) throw createError
-        tag = newTag
-      } else if (error) {
-        throw error
-      }
+        let tag = null
+        
+        if (queryError) {
+          console.error('查询标签失败:', queryError)
+          // 如果查询失败，尝试直接创建标签
+        } else if (tags && tags.length > 0) {
+          tag = tags[0]
+        }
 
-      // 关联标签到工具
-      const { error: linkError } = await supabase
-        .from('tool_tags')
-        .insert({
-          tool_id: toolId,
-          tag_id: tag.id
-        })
+        // 如果标签不存在，创建新标签
+        if (!tag) {
+          const { data: newTag, error: createError } = await supabase
+            .from('tags')
+            .insert({ name: trimmedTagName })
+            .select('id')
+            .single()
 
-      if (linkError && linkError.code !== '23505') { // 忽略重复键错误
-        throw linkError
+          if (createError) {
+            console.error('创建标签失败:', createError)
+            if (createError.code === '42501') {
+              throw new Error('权限不足：无法创建标签。请联系管理员配置数据库权限。')
+            }
+            // 如果创建失败，跳过这个标签
+            console.warn(`跳过标签 "${trimmedTagName}": ${createError.message}`)
+            continue
+          }
+          tag = newTag
+        }
+
+        if (!tag || !tag.id) {
+          console.warn(`无法获取标签 "${trimmedTagName}" 的ID，跳过`)
+          continue
+        }
+
+        // 关联标签到工具
+        const { error: linkError } = await supabase
+          .from('tool_tags')
+          .insert({
+            tool_id: toolId,
+            tag_id: tag.id
+          })
+
+        if (linkError && linkError.code !== '23505') { // 忽略重复键错误
+          console.error('关联标签失败:', linkError)
+          if (linkError.code === '42501') {
+            throw new Error('权限不足：无法关联标签。请联系管理员配置数据库权限。')
+          }
+          // 记录错误但继续处理其他标签
+          console.warn(`关联标签 "${trimmedTagName}" 失败: ${linkError.message}`)
+        }
+      } catch (error) {
+        console.error(`处理标签 "${trimmedTagName}" 时出错:`, error)
+        continue // 跳过有问题的标签，继续处理其他标签
       }
     }
   }
@@ -288,6 +322,7 @@ export class SupabaseService {
       description_zh: row.description_zh || '',
       description_en: row.description_en || '',
       homepage_url: row.homepage_url || '',
+      version: row.version || '',
       download_url: row.download_url || '',
       screenshot_url: row.screenshot_url || '',
       supported_platforms: supportedPlatforms,

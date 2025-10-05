@@ -33,6 +33,7 @@ export interface Tool {
     description_zh: string          // 中文描述
     description_en: string          // 英文描述
     homepage_url: string            // 工具主页链接
+    version?: string                // 版本号
     download_url?: string           // 主要下载地址
     screenshot_url?: string         // 截图链接
     supported_platforms: string[]   // 支持的平台（JSON数组）
@@ -186,6 +187,7 @@ export interface ToolFormData {
     description_zh: string          // 中文描述
     description_en: string          // 英文描述
     homepage_url: string            // 工具主页链接
+    version?: string                // 版本号
     primary_category_id: string     // 主分类ID（表单中为字符串）
     secondary_category_id?: string  // 二级分类ID（可选）
     tags: string[]

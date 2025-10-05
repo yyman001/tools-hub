@@ -17,6 +17,7 @@ export interface Database {
           description_zh: string
           description_en: string
           homepage_url: string | null
+          version: string | null
           download_url: string | null
           screenshot_url: string | null
           supported_platforms: string | null
@@ -36,6 +37,7 @@ export interface Database {
           description_zh: string
           description_en: string
           homepage_url?: string | null
+          version?: string | null
           download_url?: string | null
           screenshot_url?: string | null
           supported_platforms?: string | null

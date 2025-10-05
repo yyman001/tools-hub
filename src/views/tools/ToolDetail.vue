@@ -121,8 +121,9 @@
             <div class="flex items-center justify-between mb-6">
               <h2 class="text-2xl font-bold text-primary">{{ $t('tools.toolDetail') }}</h2>
               <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-muted">
-                <span>📅 {{ formatDate(tool.createdAt) }}</span>
+                <span>📅 {{ $t('tools.lastUpdated') }}: {{ formatDate(tool.updated_at || tool.created_at) }}</span>
                 <button
+                  @click="shareToolPage"
                   class="flex items-center space-x-1 text-primary-600 hover:text-primary-700 dark:text-dark-accent-blue dark:hover:text-dark-accent-blue/80"
                 >
                   <svg
@@ -229,6 +230,15 @@
                 </div>
               </div>
               
+              <!-- 版本号 -->
+              <div
+                class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-default last:border-b-0"
+              >
+                <span class="text-sm text-gray-600 dark:text-muted">{{ $t('tools.version') }}</span>
+                <span class="text-sm font-medium text-primary">{{
+                  tool.version || $t('tools.latest')
+                }}</span>
+              </div>
 
               <div
                 class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-default last:border-b-0"
@@ -388,6 +398,40 @@ const getDownloadTypeClass = (type: string) => {
     other: 'bg-gray-100 dark:bg-elevated text-gray-600 dark:text-muted'
   };
   return classMap[type as keyof typeof classMap] || classMap.other;
+};
+
+// 分享工具页面
+const shareToolPage = async () => {
+  const toolName = getToolName(tool.value);
+  const toolDescription = getToolDescription(tool.value);
+  const currentUrl = window.location.href;
+  
+  const shareData = {
+    title: `${toolName} - Tool Hub`,
+    text: toolDescription,
+    url: currentUrl
+  };
+
+  try {
+    // 尝试使用 Web Share API
+    if (navigator.share) {
+      await navigator.share(shareData);
+    } else {
+      // 降级到复制链接
+      await navigator.clipboard.writeText(currentUrl);
+      // 这里可以添加一个提示消息
+      alert(locale.value.startsWith('zh') ? '链接已复制到剪贴板' : 'Link copied to clipboard');
+    }
+  } catch (error) {
+    console.error('分享失败:', error);
+    // 如果所有方法都失败，尝试复制链接
+    try {
+      await navigator.clipboard.writeText(currentUrl);
+      alert(locale.value.startsWith('zh') ? '链接已复制到剪贴板' : 'Link copied to clipboard');
+    } catch (clipboardError) {
+      console.error('复制链接失败:', clipboardError);
+    }
+  }
 };
 
 onMounted(() => {

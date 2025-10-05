@@ -87,7 +87,7 @@
     "filterByCategory": "Filter by Category",
     "filterAndSort": "Filter & Sort",
     "showAll": "Show All",
-    "resultsCount": "{count} results"
+    "resultsCount": "{0} results"
   },
   "categories": {
     "title": "Tool Categories",
@@ -119,7 +119,6 @@
     "registerNow": "Register Now",
     "loggingIn": "Logging in...",
     "registering": "Registering...",
-    "testAccount": "Test Account: demo@example.com Password: 123456",
     "forgotPasswordLink": "Forgot Password?",
     "errors": {
       "required": "Please fill in all required fields",
@@ -134,7 +133,7 @@
       "emailSentTo": "Verification email sent to:",
       "resendEmail": "Resend Verification Email",
       "resending": "Sending...",
-      "resendIn": "Resend in {seconds}s",
+      "resendIn": "Resend in {0}s",
       "checkVerification": "I have verified, login now",
       "checking": "Checking...",
       "backToLogin": "Back to Login",
@@ -167,7 +166,7 @@
       "emailSentTo": "Reset email sent to:",
       "resendResetEmail": "Resend Reset Email",
       "resending": "Sending...",
-      "resendIn": "Resend in {seconds}s",
+      "resendIn": "Resend in {0}s",
       "helpTitle": "Didn't receive the email?",
       "helpTip1": "Check your spam/junk folder",
       "helpTip2": "Make sure the email address is correct",

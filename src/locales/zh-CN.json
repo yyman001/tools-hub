@@ -87,7 +87,7 @@
     "filterByCategory": "按分类筛选",
     "filterAndSort": "筛选和排序",
     "showAll": "显示全部",
-    "resultsCount": "共 {count} 个结果"
+    "resultsCount": "共 {0} 个结果"
   },
   "categories": {
     "title": "工具分类",
@@ -119,7 +119,6 @@
     "registerNow": "立即注册",
     "loggingIn": "登录中...",
     "registering": "注册中...",
-    "testAccount": "测试账户：demo@example.com 密码：123456",
     "forgotPasswordLink": "忘记密码？",
     "errors": {
       "required": "请填写完整信息",
@@ -134,7 +133,7 @@
       "emailSentTo": "验证邮件已发送至：",
       "resendEmail": "重新发送验证邮件",
       "resending": "发送中...",
-      "resendIn": "重新发送 ({seconds}s)",
+      "resendIn": "重新发送 ({0}秒)",
       "checkVerification": "我已验证，立即登录",
       "checking": "检查中...",
       "backToLogin": "返回登录页面",
@@ -167,7 +166,7 @@
       "emailSentTo": "重置邮件已发送至：",
       "resendResetEmail": "重新发送重置邮件",
       "resending": "发送中...",
-      "resendIn": "重新发送 ({seconds}s)",
+      "resendIn": "重新发送 ({0}秒)",
       "helpTitle": "没有收到邮件？",
       "helpTip1": "请检查您的垃圾邮件文件夹",
       "helpTip2": "确认邮箱地址是否正确",

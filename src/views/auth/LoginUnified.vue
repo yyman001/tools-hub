@@ -77,9 +77,7 @@
           </router-link>
         </div>
         
-        <div class="text-center text-sm text-muted">
-          <p>{{ $t('auth.testAccount') }}</p>
-        </div>
+
       </form>
     </div>
   </div>

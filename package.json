@@ -10,6 +10,7 @@
     "build:cloudflare": "node scripts/build-for-cloudflare.js",
     "fix:runtime": "node scripts/fix-runtime-errors.js",
     "check:translations": "node scripts/check-missing-translations.js",
+    "clean:translations": "node scripts/clean-translations.js",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
     "lint:check": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts",

@@ -20,17 +20,20 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/tools/ToolDetail.vue'),
     meta: { title: '工具详情' }
   },
+  // 重定向分类页面到工具页面
   {
     path: '/categories',
-    name: 'Categories',
-    component: () => import('@/views/categories/Categories.vue'),
-    meta: { title: '分类' }
+    redirect: '/tools'
   },
   {
     path: '/categories/:id',
-    name: 'CategoryDetail',
-    component: () => import('@/views/categories/CategoryDetail.vue'),
-    meta: { title: '分类详情' }
+    redirect: (to) => {
+      // 将分类ID作为查询参数传递给工具页面
+      return {
+        path: '/tools',
+        query: { category: to.params.id }
+      }
+    }
   },
   {
     path: '/search',

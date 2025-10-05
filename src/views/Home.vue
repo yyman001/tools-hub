@@ -46,7 +46,7 @@
               v-for="category in stats.popularCategories"
               :key="category.id"
               class="card text-center hover:shadow-md hover-bg transition-all duration-200 cursor-pointer"
-              @click="$router.push(`/categories/${category.id}`)"
+              @click="$router.push(`/tools?category=${category.id}`)"
             >
               <div class="text-4xl mb-4">{{ category.icon }}</div>
               <h3

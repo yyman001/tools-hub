@@ -20,13 +20,6 @@
             {{ $t('nav.tools') }}
           </router-link>
           <router-link 
-            to="/categories" 
-            class="nav-link"
-            :class="{ 'nav-link-active': $route.name === 'Categories' }"
-          >
-            {{ $t('nav.categories') }}
-          </router-link>
-          <router-link 
             to="/dark-mode-demo" 
             class="nav-link"
             :class="{ 'nav-link-active': $route.name === 'DarkModeDemo' }"
@@ -219,14 +212,6 @@
             :class="{ 'nav-link-active bg-primary-50 dark:bg-primary-900/20': $route.name === 'Tools' }"
           >
             {{ $t('nav.tools') }}
-          </router-link>
-          <router-link 
-            to="/categories" 
-            @click="showMobileMenu = false"
-            class="block px-3 py-2 rounded-lg nav-link hover-bg"
-            :class="{ 'nav-link-active bg-primary-50 dark:bg-primary-900/20': $route.name === 'Categories' }"
-          >
-            {{ $t('nav.categories') }}
           </router-link>
         </nav>
       </div>

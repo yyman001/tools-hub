@@ -179,14 +179,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 import { useToolStore, useCategoryStore } from '@/stores'
 import type { SearchParams, Category, Tool } from '@/types'
 
 const toolStore = useToolStore()
 const categoryStore = useCategoryStore()
 const { t, locale } = useI18n()
+const route = useRoute()
 
 // 搜索参数
 const searchParams = ref<SearchParams>({
@@ -308,9 +310,39 @@ const formatDate = (dateString: string) => {
 }
 
 onMounted(async () => {
-  // 先加载分类，再加载工具
+  // 先加载分类
   await categoryStore.fetchCategories()
+  
+  // 检查 URL 查询参数中的分类ID
+  const categoryIdFromQuery = route.query.category
+  if (categoryIdFromQuery) {
+    const categoryId = parseInt(categoryIdFromQuery as string)
+    if (!isNaN(categoryId)) {
+      selectedCategoryId.value = categoryId
+      searchParams.value.categoryId = categoryId
+      
+      // 自动展开父分类
+      const category = categories.value.find(c => c.id === categoryId)
+      if (category && category.parent_id) {
+        expandedCategories.value.add(category.parent_id)
+      }
+    }
+  }
+  
+  // 加载工具
   await toolStore.fetchTools(searchParams.value)
+})
+
+// 监听路由查询参数变化
+watch(() => route.query.category, (newCategoryId) => {
+  if (newCategoryId) {
+    const categoryId = parseInt(newCategoryId as string)
+    if (!isNaN(categoryId) && categoryId !== selectedCategoryId.value) {
+      selectCategory(categoryId)
+    }
+  } else if (selectedCategoryId.value !== null) {
+    selectCategory(null)
+  }
 })
 </script>
 

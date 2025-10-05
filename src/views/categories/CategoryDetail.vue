@@ -73,7 +73,6 @@
             class="input-field min-w-0 w-auto"
           >
             <option value="createdAt">{{ $t('tools.sortBy.latest') }}</option>
-            <option value="rating">{{ $t('tools.sortBy.rating') }}</option>
             <option value="viewCount">{{ $t('tools.sortBy.views') }}</option>
             <option value="likeCount">{{ $t('tools.sortBy.likes') }}</option>
           </select>

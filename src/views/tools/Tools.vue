@@ -30,7 +30,6 @@
           <div class="flex gap-2 mb-4">
             <select v-model="searchParams.sortBy" class="flex-1 px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white" @change="handleSearch">
               <option value="createdAt">{{ $t('tools.sortBy.latest') }}</option>
-              <option value="rating">{{ $t('tools.sortBy.rating') }}</option>
               <option value="viewCount">{{ $t('tools.sortBy.views') }}</option>
               <option value="likeCount">{{ $t('tools.sortBy.likes') }}</option>
             </select>

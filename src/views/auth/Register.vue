@@ -27,53 +27,39 @@
               required
               class="input-field mt-1"
               :placeholder="$t('auth.username')"
+              autocomplete="username"
             >
           </div>
           
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-slate-300">
-              {{ $t('auth.email') }}
-            </label>
-            <input
-              id="email"
-              v-model="form.email"
-              name="email"
-              type="email"
-              required
-              class="input-field mt-1"
-              :placeholder="$t('auth.email')"
-            >
-          </div>
+          <!-- 邮箱输入组件 -->
+          <EmailInput
+            v-model="form.email"
+            :label="$t('auth.email')"
+            name="email"
+            input-id="email"
+            :placeholder="$t('auth.email')"
+          />
           
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-slate-300">
-              {{ $t('auth.password') }}
-            </label>
-            <input
-              id="password"
-              v-model="form.password"
-              name="password"
-              type="password"
-              required
-              class="input-field mt-1"
-              :placeholder="$t('auth.password')"
-            >
-          </div>
+          <!-- 密码输入组件 -->
+          <PasswordInput
+            v-model="form.password"
+            :label="$t('auth.password')"
+            name="password"
+            input-id="password"
+            :placeholder="$t('auth.password')"
+            autocomplete="new-password"
+            :show-strength-indicator="true"
+          />
           
-          <div>
-            <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-slate-300">
-              {{ $t('auth.confirmPassword') }}
-            </label>
-            <input
-              id="confirmPassword"
-              v-model="form.confirmPassword"
-              name="confirmPassword"
-              type="password"
-              required
-              class="input-field mt-1"
-              :placeholder="$t('auth.confirmPassword')"
-            >
-          </div>
+          <!-- 确认密码输入组件 -->
+          <PasswordInput
+            v-model="form.confirmPassword"
+            :label="$t('auth.confirmPassword')"
+            name="confirmPassword"
+            input-id="confirmPassword"
+            :placeholder="$t('auth.confirmPassword')"
+            autocomplete="new-password"
+          />
         </div>
 
         <div v-if="errorMessage" class="text-red-600 dark:text-red-400 text-sm text-center">
@@ -110,6 +96,8 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/stores'
 import RegistrationSuccess from '@/components/RegistrationSuccess.vue'
+import EmailInput from '@/components/EmailInput.vue'
+import PasswordInput from '@/components/PasswordInput.vue'
 
 const router = useRouter()
 const userStore = useUserStore()

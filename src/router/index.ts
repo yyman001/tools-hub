@@ -103,6 +103,12 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '登录调试' }
   },
   {
+    path: '/auth-demo',
+    name: 'AuthDemo',
+    component: () => import('@/views/AuthDemo.vue'),
+    meta: { title: '认证组件演示' }
+  },
+  {
     path: '/cookie-policy',
     name: 'CookiePolicy',
     component: () => import('@/views/legal/CookiePolicy.vue'),

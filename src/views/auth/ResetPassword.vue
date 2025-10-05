@@ -16,41 +16,26 @@
 
       <form class="mt-8 space-y-6" @submit.prevent="handleResetPassword">
         <div class="space-y-4">
-          <div>
-            <label
-              for="password"
-              class="block text-sm font-medium text-gray-700 dark:text-slate-300"
-            >
-              {{ $t("auth.resetPassword.newPassword") }}
-            </label>
-            <input
-              id="password"
-              v-model="form.password"
-              name="password"
-              type="password"
-              required
-              class="input-field mt-1"
-              :placeholder="$t('auth.resetPassword.newPasswordPlaceholder')"
-            />
-          </div>
+          <!-- 新密码输入组件 -->
+          <PasswordInput
+            v-model="form.password"
+            :label="$t('auth.resetPassword.newPassword')"
+            name="password"
+            input-id="password"
+            :placeholder="$t('auth.resetPassword.newPasswordPlaceholder')"
+            autocomplete="new-password"
+            :show-strength-indicator="true"
+          />
 
-          <div>
-            <label
-              for="confirmPassword"
-              class="block text-sm font-medium text-gray-700 dark:text-slate-300"
-            >
-              {{ $t("auth.confirmPassword") }}
-            </label>
-            <input
-              id="confirmPassword"
-              v-model="form.confirmPassword"
-              name="confirmPassword"
-              type="password"
-              required
-              class="input-field mt-1"
-              :placeholder="$t('auth.confirmPassword')"
-            />
-          </div>
+          <!-- 确认密码输入组件 -->
+          <PasswordInput
+            v-model="form.confirmPassword"
+            :label="$t('auth.confirmPassword')"
+            name="confirmPassword"
+            input-id="confirmPassword"
+            :placeholder="$t('auth.confirmPassword')"
+            autocomplete="new-password"
+          />
         </div>
 
         <!-- 密码强度提示 -->
@@ -166,6 +151,7 @@ import { useI18n } from "vue-i18n";
 import { supabase } from "@/lib/supabase";
 import { useUserStore } from "@/stores";
 import { getAuthErrorMessage } from "@/utils/authErrors";
+import PasswordInput from "@/components/PasswordInput.vue";
 
 const route = useRoute();
 const router = useRouter();

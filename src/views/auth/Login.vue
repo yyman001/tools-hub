@@ -22,41 +22,50 @@
 
       <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
         <div class="space-y-4">
-          <div>
-            <label
-              for="email"
-              class="block text-sm font-medium text-gray-700 dark:text-slate-300"
-            >
-              {{ $t("auth.email") }}
-            </label>
-            <input
-              id="email"
-              v-model="form.email"
-              name="email"
-              type="email"
-              required
-              class="input-field mt-1"
-              :placeholder="$t('auth.email')"
-            />
-          </div>
+          <!-- 邮箱输入组件 -->
+          <EmailInput
+            v-model="form.email"
+            :label="$t('auth.email')"
+            name="email"
+            input-id="email"
+            :placeholder="$t('auth.email')"
+          />
 
-          <div>
-            <label
-              for="password"
-              class="block text-sm font-medium text-gray-700 dark:text-slate-300"
-            >
-              {{ $t("auth.password") }}
-            </label>
+          <!-- 密码输入组件 -->
+          <PasswordInput
+            v-model="form.password"
+            :label="$t('auth.password')"
+            name="password"
+            input-id="password"
+            :placeholder="$t('auth.password')"
+            autocomplete="current-password"
+          />
+        </div>
+
+        <!-- 记住密码选项 -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
             <input
-              id="password"
-              v-model="form.password"
-              name="password"
-              type="password"
-              required
-              class="input-field mt-1"
-              :placeholder="$t('auth.password')"
+              id="remember-password"
+              v-model="rememberPassword"
+              name="remember-password"
+              type="checkbox"
+              class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
             />
+            <label
+              for="remember-password"
+              class="ml-2 block text-sm text-gray-700 dark:text-slate-300"
+            >
+              {{ $t("auth.rememberPassword") }}
+            </label>
           </div>
+          
+          <router-link
+            to="/forgot-password"
+            class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300"
+          >
+            {{ $t("auth.forgotPasswordLink") }}
+          </router-link>
         </div>
 
         <div
@@ -75,28 +84,23 @@
             {{ loading ? $t("auth.loggingIn") : $t("auth.loginButton") }}
           </button>
         </div>
-
-        <div class="text-center">
-          <router-link
-            to="/forgot-password"
-            class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300"
-          >
-            {{ $t("auth.forgotPasswordLink") }}
-          </router-link>
-        </div>
       </form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useUserStore } from "@/stores";
 import { useSupabaseAuth } from "@/composables/useSupabaseAuth";
+import { useRememberPassword } from "@/composables/useRememberPassword";
+import EmailInput from "@/components/EmailInput.vue";
+import PasswordInput from "@/components/PasswordInput.vue";
 
 const { loading, user, error, useLogin, useLogout } = useSupabaseAuth();
+const { rememberPassword, saveCredentials, initializeCredentials } = useRememberPassword();
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -108,7 +112,16 @@ const form = ref({
 });
 
 const errorMessage = ref("");
-const isLoading = ref(false);
+
+// 初始化时加载保存的凭据
+onMounted(() => {
+  const savedData = initializeCredentials();
+  if (savedData.email && savedData.password) {
+    form.value.email = savedData.email;
+    form.value.password = savedData.password;
+    rememberPassword.value = savedData.rememberPassword;
+  }
+});
 
 const handleLogin = async () => {
   // 表单验证
@@ -137,7 +150,6 @@ const handleLogin = async () => {
   errorMessage.value = "";
 
   try {
-    // const result = await userStore.login(form.value.email, form.value.password)
     const { error } = await useLogin({
       email: form.value.email,
       password: form.value.password,
@@ -149,9 +161,12 @@ const handleLogin = async () => {
       return
     }
 
-      // 登录成功，跳转到首页或之前的页面
-      const redirect = router.currentRoute.value.query.redirect as string;
-      router.push(redirect || "/");
+    // 登录成功，保存凭据（如果用户选择记住密码）
+    saveCredentials(form.value.email, form.value.password, rememberPassword.value);
+
+    // 登录成功，跳转到首页或之前的页面
+    const redirect = router.currentRoute.value.query.redirect as string;
+    router.push(redirect || "/");
   } catch (error: any) {
     console.error("登录处理异常:", error);
     errorMessage.value = "登录过程中发生错误，请重试";

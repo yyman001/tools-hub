@@ -12,20 +12,14 @@
       
       <!-- 发送重置邮件表单 -->
       <form v-if="!emailSent" class="mt-8 space-y-6" @submit.prevent="handleSendResetEmail">
-        <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-slate-300">
-            {{ $t('auth.email') }}
-          </label>
-          <input
-            id="email"
-            v-model="form.email"
-            name="email"
-            type="email"
-            required
-            class="input-field mt-1"
-            :placeholder="$t('auth.forgotPassword.emailPlaceholder')"
-          >
-        </div>
+        <!-- 邮箱输入组件 -->
+        <EmailInput
+          v-model="form.email"
+          :label="$t('auth.email')"
+          name="email"
+          input-id="email"
+          :placeholder="$t('auth.forgotPassword.emailPlaceholder')"
+        />
 
         <div v-if="errorMessage" class="text-red-600 dark:text-red-400 text-sm text-center">
           {{ errorMessage }}
@@ -114,18 +108,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { supabase } from '@/lib/supabase'
 import { getAuthErrorMessage } from '@/utils/authErrors'
 import { getPasswordResetUrl } from '@/utils/environment'
+import { useRememberPassword } from '@/composables/useRememberPassword'
+import EmailInput from '@/components/EmailInput.vue'
 
 const router = useRouter()
 const { t } = useI18n()
+const { getSavedEmail } = useRememberPassword()
 
 const form = ref({
   email: ''
+})
+
+// 初始化时尝试填充保存的邮箱
+onMounted(() => {
+  const savedEmail = getSavedEmail()
+  if (savedEmail) {
+    form.value.email = savedEmail
+  }
 })
 
 const errorMessage = ref('')

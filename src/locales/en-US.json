@@ -123,6 +123,7 @@
     "loggingIn": "Logging in...",
     "registering": "Registering...",
     "forgotPasswordLink": "Forgot Password?",
+    "rememberPassword": "Remember Password",
     "errors": {
       "required": "Please fill in all required fields",
       "passwordMismatch": "Passwords do not match",

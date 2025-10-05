@@ -32,35 +32,50 @@
       
       <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
         <div class="space-y-4">
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-slate-300">
-              {{ $t('auth.email') }}
-            </label>
+          <!-- 邮箱输入组件 -->
+          <EmailInput
+            v-model="form.email"
+            :label="$t('auth.email')"
+            name="email"
+            input-id="email"
+            :placeholder="$t('auth.email')"
+          />
+
+          <!-- 密码输入组件 -->
+          <PasswordInput
+            v-model="form.password"
+            :label="$t('auth.password')"
+            name="password"
+            input-id="password"
+            :placeholder="$t('auth.password')"
+            autocomplete="current-password"
+          />
+        </div>
+
+        <!-- 记住密码选项 -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
             <input
-              id="email"
-              v-model="form.email"
-              name="email"
-              type="email"
-              required
-              class="input-field mt-1"
-              :placeholder="$t('auth.email')"
+              id="remember-password"
+              v-model="rememberPassword"
+              name="remember-password"
+              type="checkbox"
+              class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
+            />
+            <label
+              for="remember-password"
+              class="ml-2 block text-sm text-gray-700 dark:text-slate-300 pointer"
             >
+              {{ $t("auth.rememberPassword") }}
+            </label>
           </div>
           
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-slate-300">
-              {{ $t('auth.password') }}
-            </label>
-            <input
-              id="password"
-              v-model="form.password"
-              name="password"
-              type="password"
-              required
-              class="input-field mt-1"
-              :placeholder="$t('auth.password')"
-            >
-          </div>
+          <router-link
+            to="/forgot-password"
+            class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300"
+          >
+            {{ $t("auth.forgotPasswordLink") }}
+          </router-link>
         </div>
 
 
@@ -90,14 +105,7 @@
           </button>
         </div>
         
-        <div class="text-center">
-          <router-link 
-            to="/forgot-password" 
-            class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300"
-          >
-            {{ $t('auth.forgotPasswordLink') }}
-          </router-link>
-        </div>
+
         
 
       </form>
@@ -106,14 +114,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuth } from '@/composables/useAuth'
+import { useRememberPassword } from '@/composables/useRememberPassword'
+import EmailInput from '@/components/EmailInput.vue'
+import PasswordInput from '@/components/PasswordInput.vue'
 
 const router = useRouter()
 const { t } = useI18n()
 const { login, isLoading: authLoading } = useAuth()
+const { rememberPassword, saveCredentials, initializeCredentials } = useRememberPassword()
 
 const form = ref({
   email: '',
@@ -122,6 +134,16 @@ const form = ref({
 
 const errorMessage = ref('')
 const isLoading = computed(() => authLoading.value)
+
+// 初始化时加载保存的凭据
+onMounted(() => {
+  const savedData = initializeCredentials()
+  if (savedData.email && savedData.password) {
+    form.value.email = savedData.email
+    form.value.password = savedData.password
+    rememberPassword.value = savedData.rememberPassword
+  }
+})
 const handleLogin = async () => {
   if (!form.value.email || !form.value.password) {
     errorMessage.value = '请输入邮箱和密码'
@@ -138,6 +160,9 @@ const handleLogin = async () => {
     
     if (result.success) {
       console.log('登录成功')
+      
+      // 登录成功，保存凭据（如果用户选择记住密码）
+      saveCredentials(form.value.email, form.value.password, rememberPassword.value)
       
       // 跳转
       const redirect = router.currentRoute.value.query.redirect as string

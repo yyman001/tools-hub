@@ -93,7 +93,7 @@ tool-hub/
 
 ### 工具相关页面
 - **工具列表** (Tools.vue)：筛选、搜索、分页功能
-- **工具详情** (ToolDetail.vue)：Hero设计、详细信息、用户评价
+- **工具详情** (ToolDetail.vue)：Hero设计、详细信息
 - **添加工具** (AddTool.vue)：表单验证、标签管理
 
 ### 分类相关页面

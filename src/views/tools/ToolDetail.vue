@@ -45,14 +45,14 @@
               <h1
                 class="mb-4 text-3xl font-bold leading-tight md:text-4xl lg:text-5xl"
               >
-                {{ tool.name }}
+                {{ getToolName(tool) }}
               </h1>
               <p class="mb-6 text-lg leading-relaxed md:text-xl text-white/90">
-                {{ tool.description }}
+                {{ getToolDescription(tool) }}
               </p>
 
               <!-- 标签 -->
-              <div class="flex flex-wrap gap-2 mb-6">
+              <div v-if="tool.tags && tool.tags.length > 0" class="flex flex-wrap gap-2 mb-6">
                 <span
                   v-for="tag in tool.tags"
                   :key="tag"
@@ -65,7 +65,7 @@
               <!-- 主要操作按钮 -->
               <div class="flex flex-wrap gap-4">
                 <a
-                  :href="tool.url"
+                  :href="tool.homepage_url"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="flex items-center px-6 py-3 space-x-2 font-semibold transition-colors bg-white rounded-lg text-primary-600 dark:text-dark-accent-blue hover:bg-gray-50 dark:hover:bg-white/90"
@@ -85,22 +85,24 @@
                     />
                   </svg>
                 </a>
-                <!-- 平台标签 -->
-                <div class="flex flex-wrap w-full gap-2 mt-2">
-                  <span
-                    v-for="platform in tool.platforms"
-                    :key="platform.type"
-                    class="px-3 py-1 text-sm font-medium text-white rounded-full bg-white/20 backdrop-blur-sm"
-                  >
-                    {{ platform.name }}
-                  </span>
-                </div>
+                
                 <button
                   class="flex items-center px-6 py-3 space-x-2 font-medium text-white transition-colors rounded-lg bg-white/20 backdrop-blur-sm hover:bg-white/30"
                 >
                   <span>⭐</span>
                   <span>{{ $t('common.favorite') }}</span>
                 </button>
+              </div>
+
+              <!-- 平台支持 -->
+              <div v-if="tool.supported_platforms && tool.supported_platforms.length > 0" class="flex flex-wrap gap-2 mt-4">
+                <span
+                  v-for="platform in tool.supported_platforms"
+                  :key="platform"
+                  class="px-3 py-1 text-sm font-medium text-white rounded-full bg-white/20 backdrop-blur-sm"
+                >
+                  {{ getPlatformName(platform) }}
+                </span>
               </div>
             </div>
           </div>
@@ -142,84 +144,29 @@
             </div>
 
             <div class="prose prose-lg max-w-none">
-              <p class="leading-relaxed text-gray-700 dark:text-secondary">
-                {{ tool.description }}
-              </p>
-              <p class="leading-relaxed text-gray-700 dark:text-secondary">
-                这是一个优秀的工具，专为提高工作效率而设计。它具有直观的用户界面，强大的功能集，
-                以及出色的性能表现。无论你是初学者还是专业用户，都能从中受益。
-              </p>
-
-              <!-- 功能特点 -->
-              <h3 class="mt-8 mb-4 text-xl font-semibold text-primary">{{ $t('tools.features') }}</h3>
-              <ul class="space-y-2">
-                <li class="flex items-start space-x-3">
-                  <span class="mt-1 text-green-500">✓</span>
-                  <span class="text-secondary">{{ $t('features.intuitive') }}</span>
-                </li>
-                <li class="flex items-start space-x-3">
-                  <span class="mt-1 text-green-500">✓</span>
-                  <span class="text-secondary">{{ $t('features.powerful') }}</span>
-                </li>
-                <li class="flex items-start space-x-3">
-                  <span class="mt-1 text-green-500">✓</span>
-                  <span class="text-secondary">{{ $t('features.crossPlatform') }}</span>
-                </li>
-                <li class="flex items-start space-x-3">
-                  <span class="mt-1 text-green-500">✓</span>
-                  <span class="text-secondary">{{ $t('features.community') }}</span>
-                </li>
-              </ul>
-
-              <!-- 使用场景 -->
-              <h3 class="mt-8 mb-4 text-xl font-semibold text-primary">{{ $t('tools.useCases') }}</h3>
-              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div class="p-4 rounded-lg bg-gray-50 dark:bg-elevated">
-                  <h4 class="mb-2 font-medium text-primary">{{ $t('useCases.personal') }}</h4>
-                  <p class="text-sm text-gray-600 dark:text-muted">
-                    {{ $t('useCases.personalDesc') }}
-                  </p>
-                </div>
-                <div class="p-4 rounded-lg bg-gray-50 dark:bg-elevated">
-                  <h4 class="mb-2 font-medium text-primary">{{ $t('useCases.team') }}</h4>
-                  <p class="text-sm text-gray-600 dark:text-muted">{{ $t('useCases.teamDesc') }}</p>
-                </div>
-                <div class="p-4 rounded-lg bg-gray-50 dark:bg-elevated">
-                  <h4 class="mb-2 font-medium text-primary">{{ $t('useCases.enterprise') }}</h4>
-                  <p class="text-sm text-gray-600 dark:text-muted">{{ $t('useCases.enterpriseDesc') }}</p>
-                </div>
-                <div class="p-4 rounded-lg bg-gray-50 dark:bg-elevated">
-                  <h4 class="mb-2 font-medium text-primary">{{ $t('useCases.developer') }}</h4>
-                  <p class="text-sm text-gray-600 dark:text-muted">{{ $t('useCases.developerDesc') }}</p>
-                </div>
+              <div class="mb-6">
+                <h3 class="text-lg font-semibold text-primary mb-3">{{ $t('tools.toolDetail') }}</h3>
+                <p class="leading-relaxed text-gray-700 dark:text-secondary mb-4">
+                  {{ getToolDescription(tool) }}
+                </p>
               </div>
+
+              <!-- 工具截图 -->
+              <div v-if="tool.screenshot_url" class="mb-8">
+                <h3 class="text-lg font-semibold text-primary mb-3">{{ $t('tools.screenshot') }}</h3>
+                <img 
+                  :src="tool.screenshot_url" 
+                  :alt="getToolName(tool)"
+                  class="w-full rounded-lg shadow-md"
+                  @error="$event.target.style.display='none'"
+                >
+              </div>
+
+
             </div>
           </div>
 
-          <!-- 用户评价 -->
-          <div class="card">
-            <h3 class="mb-6 text-xl font-semibold text-primary">{{ $t('tools.userReviews') }}</h3>
-            <div class="space-y-6">
-              <div class="pb-6 border-b border-gray-200 dark:border-default last:border-b-0">
-                <div class="flex items-start space-x-4">
-                  <div
-                    class="flex items-center justify-center w-10 h-10 rounded-full bg-primary-100 dark:bg-dark-accent-blue/20"
-                  >
-                    <span class="font-medium text-primary-600 dark:text-dark-accent-blue">A</span>
-                  </div>
-                  <div class="flex-1">
-                    <div class="flex items-center mb-2 space-x-2">
-                      <span class="font-medium text-primary">Anonymous User</span>
-                      <div class="flex text-yellow-400">⭐⭐⭐⭐⭐</div>
-                    </div>
-                    <p class="text-gray-700 dark:text-secondary">
-                      {{ $t('common.loading') === t('common.loading') ? '非常好用的工具，界面简洁，功能强大，推荐给大家！' : 'Great tool with clean interface and powerful features. Highly recommended!' }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+
         </div>
 
         <!-- 侧边栏 -->
@@ -228,48 +175,74 @@
           <div class="card">
             <h3 class="mb-4 font-semibold text-primary">{{ $t('tools.basicInfo') }}</h3>
             <div class="space-y-4">
+              <!-- 主分类 -->
+              <div
+                v-if="tool.primaryCategory"
+                class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-default last:border-b-0"
+              >
+                <span class="text-sm text-gray-600 dark:text-muted">{{ $t('addTool.primaryCategory') }}</span>
+                <span class="text-sm font-medium text-primary">{{
+                  getCategoryName(tool.primaryCategory)
+                }}</span>
+              </div>
+
+              <!-- 二级分类 -->
+              <div
+                v-if="tool.secondaryCategory"
+                class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-default last:border-b-0"
+              >
+                <span class="text-sm text-gray-600 dark:text-muted">{{ $t('addTool.secondaryCategory') }}</span>
+                <span class="text-sm font-medium text-primary">{{
+                  getCategoryName(tool.secondaryCategory)
+                }}</span>
+              </div>
+
+              <!-- 工具主页 -->
               <div
                 class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-default last:border-b-0"
               >
-                <span class="text-sm text-gray-600 dark:text-muted">{{ $t('addTool.category') }}</span>
-                <span class="text-sm font-medium text-primary">{{
-                  getCategoryName(tool.category)
-                }}</span>
+                <span class="text-sm text-gray-600 dark:text-muted">{{ $t('addTool.homepageUrl') }}</span>
+                <a 
+                  :href="tool.homepage_url" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {{ $t('tools.visitTool') }}
+                </a>
               </div>
               
               <!-- 平台支持 -->
               <div
                 v-if="tool.supported_platforms && tool.supported_platforms.length > 0"
-                class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-default last:border-b-0"
+                class="py-2 border-b border-gray-100 dark:border-default last:border-b-0"
               >
-                <span class="text-sm text-gray-600 dark:text-muted">{{ $t('tools.platforms') }}</span>
-                <span class="text-sm font-medium text-primary">
-                  {{ tool.supported_platforms.join('、') }}
-                </span>
-              </div>
-              
-              <div
-                class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-default last:border-b-0"
-              >
-                <span class="text-sm text-gray-600 dark:text-muted">{{ $t('tools.rating') }}</span>
-                <div class="flex items-center space-x-1">
-                  <span class="text-sm font-medium text-primary">{{ tool.rating }}</span>
-                  <span class="text-yellow-400">⭐</span>
+                <span class="text-sm text-gray-600 dark:text-muted block mb-2">{{ $t('addTool.platforms') }}</span>
+                <div class="flex flex-wrap gap-1">
+                  <span
+                    v-for="platform in tool.supported_platforms"
+                    :key="platform"
+                    class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded"
+                  >
+                    {{ getPlatformName(platform) }}
+                  </span>
                 </div>
               </div>
+              
+
               <div
                 class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-default last:border-b-0"
               >
                 <span class="text-sm text-gray-600 dark:text-muted">{{ $t('tools.views') }}</span>
                 <span class="text-sm font-medium text-primary">{{
-                  tool.viewCount.toLocaleString()
+                  (tool.viewCount || 0).toLocaleString()
                 }}</span>
               </div>
 
               <div class="flex items-center justify-between py-2">
                 <span class="text-sm text-gray-600 dark:text-muted">{{ $t('tools.createdAt') }}</span>
                 <span class="text-sm font-medium text-primary">{{
-                  formatDate(tool.createdAt)
+                  formatDate(tool.created_at)
                 }}</span>
               </div>
             </div>
@@ -312,31 +285,7 @@
             </div>
           </div>
 
-          <!-- 相关工具 -->
-          <div class="card">
-            <h3 class="mb-4 font-semibold text-primary">{{ $t('tools.relatedTools') }}</h3>
-            <div class="space-y-3">
-              <div
-                v-for="i in 3"
-                :key="i"
-                class="flex items-center p-3 space-x-3 transition-colors rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-elevated"
-              >
-                <div
-                  class="flex items-center justify-center w-10 h-10 text-lg bg-gray-200 rounded-lg dark:bg-elevated"
-                >
-                  🔧
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="text-sm font-medium truncate text-primary">
-                    {{ $t('tools.relatedTools') }} {{ i }}
-                  </div>
-                  <div class="text-xs text-gray-500 truncate dark:text-muted">
-                    {{ $t('common.loading') === t('common.loading') ? '简短的工具描述' : 'Brief tool description' }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+
 
           <!-- 快速操作 -->
           <div class="card">
@@ -370,24 +319,53 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from 'vue-i18n'
 import { useToolStore, useCategoryStore } from "@/stores";
-import type { DetailedPlatformType } from '@/types'
+import type { DetailedPlatformType, Category } from '@/types'
 
 const route = useRoute();
 const toolStore = useToolStore();
 const categoryStore = useCategoryStore();
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const tool = computed(() => toolStore.currentTool);
 const isLoading = computed(() => toolStore.isLoading);
 const categories = computed(() => categoryStore.categories);
 
-const getCategoryName = (categoryId: string) => {
-  const category = categories.value.find((c) => c.id === categoryId);
-  return category?.name || "未知分类";
+// 获取工具名称（根据语言）
+const getToolName = (tool: any) => {
+  if (!tool) return '';
+  return locale.value.startsWith('zh') ? tool.name_zh : tool.name_en;
+};
+
+// 获取工具描述（根据语言）
+const getToolDescription = (tool: any) => {
+  if (!tool) return '';
+  return locale.value.startsWith('zh') ? tool.description_zh : tool.description_en;
+};
+
+// 获取分类名称（根据语言）
+const getCategoryName = (category: Category) => {
+  if (!category) return '';
+  return locale.value.startsWith('zh') ? category.name_zh : category.name_en;
+};
+
+// 获取平台名称
+const getPlatformName = (platform: string) => {
+  const platformMap: Record<string, string> = {
+    'windows': 'Windows',
+    'macos': 'macOS',
+    'linux': 'Linux',
+    'android': 'Android',
+    'ios': 'iOS',
+    'web': '网页',
+    'cross-platform': '跨平台'
+  };
+  return platformMap[platform] || platform;
 };
 
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("zh-CN");
+  return new Date(dateString).toLocaleDateString(
+    locale.value.startsWith('zh') ? 'zh-CN' : 'en-US'
+  );
 };
 
 // 下载类型标签映射

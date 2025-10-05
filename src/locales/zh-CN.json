@@ -55,27 +55,25 @@
     "addTool": "添加工具",
     "toolDetail": "工具详情",
     "basicInfo": "基本信息",
-    "rating": "评分",
+
     "views": "浏览量",
     "likes": "点赞数",
     "createdAt": "创建时间",
-    "relatedTools": "相关工具",
+
     "quickActions": "快速操作",
     "reportIssue": "报告问题",
     "suggestImprovement": "建议改进",
     "contactAuthor": "联系作者",
     "visitTool": "访问工具",
-    "userReviews": "用户评价",
-    "features": "功能特点",
-    "useCases": "使用场景",
     "platforms": "支持平台",
     "downloadLinks": "下载地址",
+    "screenshot": "工具截图",
     "searchTools": "搜索工具...",
     "allCategories": "所有分类",
     "noTools": "暂无工具",
     "sortBy": {
       "latest": "最新发布",
-      "rating": "评分排序",
+
       "views": "浏览量",
       "likes": "点赞数",
       "name": "名称排序"
@@ -277,22 +275,7 @@
     "disclaimer": "免责声明",
     "copyright": "保留所有权利"
   },
-  "useCases": {
-    "personal": "个人用户",
-    "personalDesc": "适合个人日常工作和学习使用",
-    "team": "团队协作",
-    "teamDesc": "支持多人协作和项目管理",
-    "enterprise": "企业应用",
-    "enterpriseDesc": "满足企业级需求和安全要求",
-    "developer": "开发者",
-    "developerDesc": "提供API和扩展能力"
-  },
-  "features": {
-    "intuitive": "简洁直观的用户界面设计",
-    "powerful": "强大的功能集和丰富的选项",
-    "crossPlatform": "跨平台支持，兼容性良好",
-    "community": "活跃的社区支持和定期更新"
-  },
+
   "legal": {
     "cookiePolicy": {
       "title": "Cookie 政策",

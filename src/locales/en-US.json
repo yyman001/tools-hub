@@ -55,27 +55,24 @@
     "addTool": "Add Tool",
     "toolDetail": "Tool Details",
     "basicInfo": "Basic Info",
-    "rating": "Rating",
     "views": "Views",
     "likes": "Likes",
     "createdAt": "Created",
-    "relatedTools": "Related Tools",
+
     "quickActions": "Quick Actions",
     "reportIssue": "Report Issue",
     "suggestImprovement": "Suggest Improvement",
     "contactAuthor": "Contact Author",
     "visitTool": "Visit Tool",
-    "userReviews": "User Reviews",
-    "features": "Features",
-    "useCases": "Use Cases",
     "platforms": "Platforms",
     "downloadLinks": "Download Links",
+    "screenshot": "Screenshot",
     "searchTools": "Search tools...",
     "allCategories": "All Categories",
     "noTools": "No tools available",
     "sortBy": {
       "latest": "Latest",
-      "rating": "Rating",
+
       "views": "Views",
       "likes": "Likes",
       "name": "Name"
@@ -277,22 +274,7 @@
     "disclaimer": "Disclaimer",
     "copyright": "All rights reserved"
   },
-  "useCases": {
-    "personal": "Personal Users",
-    "personalDesc": "Perfect for daily work and study",
-    "team": "Team Collaboration",
-    "teamDesc": "Support multi-user collaboration and project management",
-    "enterprise": "Enterprise",
-    "enterpriseDesc": "Meet enterprise-level requirements and security standards",
-    "developer": "Developers",
-    "developerDesc": "Provide API and extensibility"
-  },
-  "features": {
-    "intuitive": "Clean and intuitive user interface design",
-    "powerful": "Powerful feature set with rich options",
-    "crossPlatform": "Cross-platform support with excellent compatibility",
-    "community": "Active community support and regular updates"
-  },
+
   "legal": {
     "cookiePolicy": {
       "title": "Cookie Policy",

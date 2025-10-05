@@ -98,7 +98,7 @@ tool-hub/
 
 #### 工具模块 (`tools/`)
 - **Tools.vue**: 工具列表，筛选搜索，分页功能
-- **ToolDetail.vue**: 工具详情，Hero 设计，详细信息，用户评价
+- **ToolDetail.vue**: 工具详情，Hero 设计，详细信息
 - **AddTool.vue**: 添加工具，表单验证，标签管理
 
 #### 用户模块 (`user/`)

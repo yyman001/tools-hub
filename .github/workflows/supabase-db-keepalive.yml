@@ -1,0 +1,28 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # 每天 UTC 3点执行一次
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install PostgreSQL Client
+        run: sudo apt-get install -y postgresql-client
+
+      - name: Curl Supabase REST API
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+          -H "apikey: ${{ secrets.SUPABASE_KEY }}" \
+          "https://${{ secrets.SUPABASE_PROJECT_REF }}.supabase.co/rest/v1/"
+
+      - name: Ping Supabase DB
+        run: |
+          PGPASSWORD=${{ secrets.SUPABASE_DB_PASSWORD }} psql \
+            -h ${{ secrets.SUPABASE_DB_HOST }} \
+            -p 5432 \
+            -U ${{ secrets.SUPABASE_DB_USER }} \
+            -d postgres \
+            -c "SELECT 1;"

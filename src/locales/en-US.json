@@ -23,7 +23,12 @@
     "warning": "Warning",
     "info": "Info",
     "switchToLight": "Switch to Light Mode",
-    "switchToDark": "Switch to Dark Mode"
+    "switchToDark": "Switch to Dark Mode",
+    "filter": "Filter",
+    "sort": "Sort",
+    "reset": "Reset",
+    "apply": "Apply",
+    "clear": "Clear"
   },
   "nav": {
     "home": "Home",
@@ -64,7 +69,25 @@
     "features": "Features",
     "useCases": "Use Cases",
     "platforms": "Platforms",
-    "downloadLinks": "Download Links"
+    "downloadLinks": "Download Links",
+    "searchTools": "Search tools...",
+    "allCategories": "All Categories",
+    "noTools": "No tools available",
+    "sortBy": {
+      "latest": "Latest",
+      "rating": "Rating",
+      "views": "Views",
+      "likes": "Likes",
+      "name": "Name"
+    },
+    "sortOrder": {
+      "desc": "Descending",
+      "asc": "Ascending"
+    },
+    "filterByCategory": "Filter by Category",
+    "filterAndSort": "Filter & Sort",
+    "showAll": "Show All",
+    "resultsCount": "{count} results"
   },
   "categories": {
     "title": "Tool Categories",
@@ -76,7 +99,10 @@
     "gridView": "Grid View",
     "listView": "List View",
     "discover": "Discover",
-    "qualityTools": "quality tools"
+    "qualityTools": "quality tools",
+    "allCategories": "All Categories",
+    "subcategories": "Subcategories",
+    "parentCategory": "Parent Category"
   },
   "auth": {
     "login": "Login to Account",
@@ -215,7 +241,9 @@
     "downloadDescription": "Description",
     "downloadDescriptionPlaceholder": "e.g., Extraction code: 1234",
     "addDownloadLink": "Add Download Link",
-    "remove": "Remove"
+    "remove": "Remove",
+    "category": "Category",
+    "selectCategory": "Select Category"
   },
   "search": {
     "title": "Search Results",

@@ -96,7 +96,7 @@
             >
               <option value="">{{ $t('addTool.selectPrimaryCategory') }}</option>
               <option v-for="category in primaryCategories" :key="category.id" :value="category.id">
-                {{ $i18n.locale === 'zh' ? category.name_zh : category.name_en }}
+                {{ locale.startsWith('zh') ? category.name_zh : category.name_en }}
               </option>
             </select>
           </div>
@@ -111,7 +111,7 @@
             >
               <option value="">{{ $t('addTool.selectSecondaryCategory') }}</option>
               <option v-for="category in secondaryCategories" :key="category.id" :value="category.id">
-                {{ $i18n.locale === 'zh' ? category.name_zh : category.name_en }}
+                {{ locale.startsWith('zh') ? category.name_zh : category.name_en }}
               </option>
             </select>
           </div>
@@ -363,7 +363,7 @@ import { useToolStore, useCategoryStore } from '@/stores'
 const router = useRouter()
 const toolStore = useToolStore()
 const categoryStore = useCategoryStore()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const form = ref({
   name_zh: '',

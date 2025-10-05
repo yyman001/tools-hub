@@ -23,7 +23,12 @@
     "warning": "警告",
     "info": "信息",
     "switchToLight": "切换到亮模式",
-    "switchToDark": "切换到暗模式"
+    "switchToDark": "切换到暗模式",
+    "filter": "筛选",
+    "sort": "排序",
+    "reset": "重置",
+    "apply": "应用",
+    "clear": "清除"
   },
   "nav": {
     "home": "首页",
@@ -64,7 +69,25 @@
     "features": "功能特点",
     "useCases": "使用场景",
     "platforms": "支持平台",
-    "downloadLinks": "下载地址"
+    "downloadLinks": "下载地址",
+    "searchTools": "搜索工具...",
+    "allCategories": "所有分类",
+    "noTools": "暂无工具",
+    "sortBy": {
+      "latest": "最新发布",
+      "rating": "评分排序",
+      "views": "浏览量",
+      "likes": "点赞数",
+      "name": "名称排序"
+    },
+    "sortOrder": {
+      "desc": "降序",
+      "asc": "升序"
+    },
+    "filterByCategory": "按分类筛选",
+    "filterAndSort": "筛选和排序",
+    "showAll": "显示全部",
+    "resultsCount": "共 {count} 个结果"
   },
   "categories": {
     "title": "工具分类",
@@ -76,7 +99,10 @@
     "gridView": "网格视图",
     "listView": "列表视图",
     "discover": "发现",
-    "qualityTools": "个优质工具"
+    "qualityTools": "个优质工具",
+    "allCategories": "所有分类",
+    "subcategories": "子分类",
+    "parentCategory": "父分类"
   },
   "auth": {
     "login": "登录账户",
@@ -215,7 +241,9 @@
     "downloadDescription": "描述信息",
     "downloadDescriptionPlaceholder": "如：提取码：1234",
     "addDownloadLink": "添加下载地址",
-    "remove": "移除"
+    "remove": "移除",
+    "category": "分类",
+    "selectCategory": "选择分类"
   },
   "search": {
     "title": "搜索结果",

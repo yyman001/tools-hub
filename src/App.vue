@@ -7,6 +7,7 @@
     <AppFooter />
     <NetworkStatus />
     <CookieConsent />
+    <AuthStatusMonitor />
   </div>
 </template>
 
@@ -16,6 +17,7 @@ import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
 import NetworkStatus from '@/components/NetworkStatus.vue'
 import CookieConsent from '@/components/CookieConsent.vue'
+import AuthStatusMonitor from '@/components/AuthStatusMonitor.vue'
 import { useAuth } from '@/composables/useAuth'
 
 const { initAuth } = useAuth()

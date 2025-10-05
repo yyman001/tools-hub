@@ -30,8 +30,7 @@
         <!-- 认证模式显示 -->
         <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
           <p class="text-xs text-blue-800 dark:text-blue-200">
-            当前认证模式: {{ authMode.toUpperCase() }}
-            {{ authMode === 'http' ? '(HTTP REST API)' : '(Supabase JS SDK)' }}
+            当前认证模式: SDK (Supabase JS SDK)
           </p>
         </div>
 
@@ -127,7 +126,7 @@ import { useI18n } from 'vue-i18n'
 import { useAuth } from '@/composables/useAuth'
 
 const { t } = useI18n()
-const { sendPasswordResetEmail, isLoading, authMode } = useAuth()
+const { sendPasswordResetEmail, isLoading } = useAuth()
 
 const form = ref({
   email: ''

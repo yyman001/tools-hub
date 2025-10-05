@@ -91,6 +91,18 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '暗模式演示' }
   },
   {
+    path: '/auth-test',
+    name: 'AuthTest',
+    component: () => import('@/views/AuthTest.vue'),
+    meta: { title: '认证测试' }
+  },
+  {
+    path: '/login-debug',
+    name: 'LoginDebug',
+    component: () => import('@/views/LoginDebug.vue'),
+    meta: { title: '登录调试' }
+  },
+  {
     path: '/cookie-policy',
     name: 'CookiePolicy',
     component: () => import('@/views/legal/CookiePolicy.vue'),

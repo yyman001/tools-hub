@@ -1,483 +1,416 @@
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores'
-import { supabase } from '@/lib/supabase'
+import { createClient, type User } from '@supabase/supabase-js'
 import { getAuthErrorMessage } from '@/utils/authErrors'
 
-// 认证模式配置
-const AUTH_MODE = import.meta.env.VITE_AUTH_MODE || 'http' // 'http' 或 'sdk'
+// 类型定义
+interface AuthState {
+  user: User | null
+  loading: boolean
+  error: Error | null
+}
+
+interface LoginCredentials {
+  email: string
+  password: string
+}
+
+// 创建 Supabase 客户端
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 export function useAuth() {
   const userStore = useUserStore()
   const router = useRouter()
 
-  const isLoading = ref(false)
-  const isAuthenticated = computed(() => userStore.isLoggedIn)
-  const currentUser = computed(() => userStore.user)
+  const authState = ref<AuthState>({
+    user: null,
+    loading: false,
+    error: null,
+  })
 
-  // 获取Supabase配置
-  const getSupabaseConfig = () => {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-    
-    if (!supabaseUrl || !supabaseAnonKey) {
-      throw new Error('缺少Supabase配置')
-    }
-    
-    return { supabaseUrl, supabaseAnonKey }
-  }
+  const isLoading = computed(() => authState.value.loading)
+  const isAuthenticated = computed(() => !!authState.value.user && !!userStore.token)
+  const currentUser = computed(() => authState.value.user)
 
-  // HTTP模式：使用REST API登录
-  const loginViaHTTP = async (email: string, password: string) => {
-    const { supabaseUrl, supabaseAnonKey } = getSupabaseConfig()
-    
-    const response = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': supabaseAnonKey
-      },
-      body: JSON.stringify({ email, password })
-    })
-    
-    if (!response.ok) {
-      const errorData = await response.text()
-      throw new Error(`HTTP ${response.status}: ${errorData}`)
-    }
-    
-    return await response.json()
-  }
-
-  // SDK模式：使用Supabase JS SDK登录
-  const loginViaSDK = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
-    
-    if (error) throw error
-    return data
-  }
-
-  // 统一登录方法
+  // 登录方法
   const login = async (email: string, password: string) => {
-    isLoading.value = true
-    
     try {
-      console.log(`🔐 使用${AUTH_MODE.toUpperCase()}模式登录:`, email)
-      
-      let result
-      if (AUTH_MODE === 'http') {
-        result = await loginViaHTTP(email, password)
-      } else {
-        result = await loginViaSDK(email, password)
-      }
-      
-      // 处理登录成功
-      if (result.access_token || result.session?.access_token) {
-        const token = result.access_token || result.session.access_token
-        const user = result.user || result.session?.user
-        
-        // 设置token
-        userStore.token = token
-        localStorage.setItem('token', token)
-        
-        // 设置用户信息
-        if (user) {
-          userStore.user = {
-            id: user.id,
-            username: user.user_metadata?.username || user.email?.split('@')[0] || '',
-            email: user.email || '',
-            avatar: user.user_metadata?.avatar_url,
-            createdAt: user.created_at,
-            toolCount: 0,
-            favoriteCount: 0
-          }
-        } else {
-          // 如果没有用户信息，获取用户信息
-          await fetchUserProfile(token)
-        }
-        
-        console.log('✅ 登录成功')
-        return { success: true }
-      }
-      
-      throw new Error('登录响应无效')
-    } catch (error: any) {
-      console.error('❌ 登录失败:', error)
-      return { 
-        success: false, 
-        message: getAuthErrorMessage(error) 
-      }
-    } finally {
-      isLoading.value = false
-    }
-  }
+      authState.value.loading = true
+      authState.value.error = null
 
-  // HTTP模式：使用REST API注册
-  const registerViaHTTP = async (email: string, password: string, username: string) => {
-    const { supabaseUrl, supabaseAnonKey } = getSupabaseConfig()
-    
-    const response = await fetch(`${supabaseUrl}/auth/v1/signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': supabaseAnonKey
-      },
-      body: JSON.stringify({
+      console.log('🔐 开始登录:', email)
+
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        data: { username }
       })
-    })
-    
-    if (!response.ok) {
-      const errorData = await response.text()
-      throw new Error(`HTTP ${response.status}: ${errorData}`)
+
+      if (error) throw error
+
+      // 设置认证状态
+      authState.value.user = data.user
+
+      // 同步到用户store
+      if (data.user && data.session) {
+        userStore.token = data.session.access_token
+        localStorage.setItem('token', data.session.access_token)
+
+        userStore.user = {
+          id: data.user.id,
+          username: data.user.user_metadata?.username || data.user.email?.split('@')[0] || '',
+          email: data.user.email || '',
+          avatar: data.user.user_metadata?.avatar_url,
+          createdAt: data.user.created_at,
+          toolCount: 0,
+          favoriteCount: 0
+        }
+
+        console.log('✅ 登录成功:', data.user.email)
+      }
+
+      return { success: true, user: data.user, session: data.session }
+    } catch (error) {
+      authState.value.error = error as Error
+      console.error('❌ 登录失败:', error)
+      return {
+        success: false,
+        message: getAuthErrorMessage(error as Error)
+      }
+    } finally {
+      authState.value.loading = false
     }
-    
-    return await response.json()
   }
 
-  // SDK模式：使用Supabase JS SDK注册
-  const registerViaSDK = async (email: string, password: string, username: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { username }
-      }
-    })
-    
-    if (error) throw error
-    return data
-  }
-
-  // 统一注册方法
+  // 注册方法
   const register = async (username: string, email: string, password: string) => {
-    isLoading.value = true
-    
     try {
-      console.log(`🔐 使用${AUTH_MODE.toUpperCase()}模式注册:`, email)
-      
-      let result
-      if (AUTH_MODE === 'http') {
-        result = await registerViaHTTP(email, password, username)
-      } else {
-        result = await registerViaSDK(email, password, username)
-      }
-      
+      authState.value.loading = true
+      authState.value.error = null
+
+      console.log('🔐 开始注册:', email)
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { username }
+        }
+      })
+
+      if (error) throw error
+
       // 处理注册结果
-      if (result.user) {
-        if (result.session) {
+      if (data.user) {
+        if (data.session) {
           // 注册成功并自动登录
-          const token = result.session.access_token
-          userStore.token = token
-          localStorage.setItem('token', token)
-          
+          authState.value.user = data.user
+          userStore.token = data.session.access_token
+          localStorage.setItem('token', data.session.access_token)
+
           userStore.user = {
-            id: result.user.id,
-            username: result.user.user_metadata?.username || result.user.email?.split('@')[0] || '',
-            email: result.user.email || '',
-            avatar: result.user.user_metadata?.avatar_url,
-            createdAt: result.user.created_at,
+            id: data.user.id,
+            username: data.user.user_metadata?.username || data.user.email?.split('@')[0] || '',
+            email: data.user.email || '',
+            avatar: data.user.user_metadata?.avatar_url,
+            createdAt: data.user.created_at,
             toolCount: 0,
             favoriteCount: 0
           }
-          
+
           console.log('✅ 注册并登录成功')
-          return { 
-            success: true, 
+          return {
+            success: true,
             message: '注册成功',
             needsVerification: false
           }
         } else {
           // 需要邮箱验证
           console.log('✅ 注册成功，需要邮箱验证')
-          return { 
-            success: true, 
+          return {
+            success: true,
             message: '注册成功，请检查您的邮箱进行验证',
             needsVerification: true,
-            email: result.user.email
+            email: data.user.email
           }
         }
       }
-      
+
       throw new Error('注册响应无效')
     } catch (error: any) {
+      authState.value.error = error as Error
       console.error('❌ 注册失败:', error)
-      return { 
-        success: false, 
-        message: getAuthErrorMessage(error) 
+      return {
+        success: false,
+        message: getAuthErrorMessage(error)
       }
     } finally {
-      isLoading.value = false
+      authState.value.loading = false
     }
   }
 
-  // HTTP模式：发送密码重置邮件
-  const sendPasswordResetEmailViaHTTP = async (email: string) => {
-    const { supabaseUrl, supabaseAnonKey } = getSupabaseConfig()
-    
-    const response = await fetch(`${supabaseUrl}/auth/v1/recover`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': supabaseAnonKey
-      },
-      body: JSON.stringify({
-        email,
-        gotrue_meta_security: {}
-      })
-    })
-    
-    if (!response.ok) {
-      const errorData = await response.text()
-      throw new Error(`HTTP ${response.status}: ${errorData}`)
-    }
-    
-    return await response.json()
-  }
-
-  // SDK模式：发送密码重置邮件
-  const sendPasswordResetEmailViaSDK = async (email: string) => {
-    const redirectUrl = `${window.location.origin}/reset-password`
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectUrl
-    })
-    
-    if (error) throw error
-    return { success: true }
-  }
-
-  // 统一发送密码重置邮件方法
+  // 发送密码重置邮件
   const sendPasswordResetEmail = async (email: string) => {
-    isLoading.value = true
-    
     try {
-      console.log(`🔐 使用${AUTH_MODE.toUpperCase()}模式发送密码重置邮件:`, email)
-      
-      if (AUTH_MODE === 'http') {
-        await sendPasswordResetEmailViaHTTP(email)
-      } else {
-        await sendPasswordResetEmailViaSDK(email)
-      }
-      
+      authState.value.loading = true
+      authState.value.error = null
+
+      console.log('🔐 发送密码重置邮件:', email)
+
+      const redirectUrl = `${window.location.origin}/reset-password`
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl
+      })
+
+      if (error) throw error
+
       console.log('✅ 密码重置邮件发送成功')
       return { success: true, message: '密码重置邮件已发送' }
     } catch (error: any) {
+      authState.value.error = error as Error
       console.error('❌ 发送密码重置邮件失败:', error)
-      return { 
-        success: false, 
-        message: getAuthErrorMessage(error) 
+      return {
+        success: false,
+        message: getAuthErrorMessage(error)
       }
     } finally {
-      isLoading.value = false
+      authState.value.loading = false
     }
   }
 
-  // HTTP模式：重置密码
-  const resetPasswordViaHTTP = async (newPassword: string, token: string) => {
-    const { supabaseUrl, supabaseAnonKey } = getSupabaseConfig()
-    
-    const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-        'apikey': supabaseAnonKey
-      },
-      body: JSON.stringify({ password: newPassword })
-    })
-    
-    if (!response.ok) {
-      const errorData = await response.text()
-      throw new Error(`HTTP ${response.status}: ${errorData}`)
-    }
-    
-    return await response.json()
-  }
-
-  // SDK模式：重置密码
-  const resetPasswordViaSDK = async (newPassword: string) => {
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword
-    })
-    
-    if (error) throw error
-    return { success: true }
-  }
-
-  // 统一重置密码方法
-  const resetPassword = async (newPassword: string, accessToken?: string) => {
-    isLoading.value = true
-    
+  // 重置密码
+  const resetPassword = async (newPassword: string) => {
     try {
-      console.log(`🔐 使用${AUTH_MODE.toUpperCase()}模式重置密码`)
-      
-      if (AUTH_MODE === 'http') {
-        if (!accessToken) {
-          throw new Error('HTTP模式需要提供access_token')
-        }
-        await resetPasswordViaHTTP(newPassword, accessToken)
-      } else {
-        await resetPasswordViaSDK(newPassword)
-      }
-      
+      authState.value.loading = true
+      authState.value.error = null
+
+      console.log('🔐 重置密码')
+
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      })
+
+      if (error) throw error
+
       console.log('✅ 密码重置成功')
       return { success: true, message: '密码重置成功' }
     } catch (error: any) {
+      authState.value.error = error as Error
       console.error('❌ 密码重置失败:', error)
-      return { 
-        success: false, 
-        message: getAuthErrorMessage(error) 
+      return {
+        success: false,
+        message: getAuthErrorMessage(error)
       }
     } finally {
-      isLoading.value = false
+      authState.value.loading = false
     }
   }
 
-  // HTTP模式：获取用户信息
-  const fetchUserProfileViaHTTP = async (token: string) => {
-    const { supabaseUrl, supabaseAnonKey } = getSupabaseConfig()
-    
-    const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'apikey': supabaseAnonKey
-      }
-    })
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`)
-    }
-    
-    return await response.json()
-  }
-
-  // SDK模式：获取用户信息
-  const fetchUserProfileViaSDK = async () => {
-    const { data: { user }, error } = await supabase.auth.getUser()
-    
-    if (error) throw error
-    return user
-  }
-
-  // 统一获取用户信息方法
-  const fetchUserProfile = async (token?: string) => {
+  // 获取用户信息
+  const fetchUserProfile = async () => {
     try {
-      let userData
-      
-      if (AUTH_MODE === 'http') {
-        const currentToken = token || userStore.token || localStorage.getItem('token')
-        if (!currentToken) {
-          throw new Error('没有token')
-        }
-        userData = await fetchUserProfileViaHTTP(currentToken)
-      } else {
-        userData = await fetchUserProfileViaSDK()
-      }
-      
-      if (userData) {
-        userStore.user = {
-          id: userData.id,
-          username: userData.user_metadata?.username || userData.email?.split('@')[0] || '',
-          email: userData.email || '',
-          avatar: userData.user_metadata?.avatar_url,
-          createdAt: userData.created_at,
+      authState.value.loading = true
+      authState.value.error = null
+
+      const { data: { user }, error } = await supabase.auth.getUser()
+
+      if (error) throw error
+
+      if (user) {
+        authState.value.user = user
+
+        // 同步到用户store
+        const userInfo = {
+          id: user.id,
+          username: user.user_metadata?.username || user.email?.split('@')[0] || '',
+          email: user.email || '',
+          avatar: user.user_metadata?.avatar_url,
+          createdAt: user.created_at,
           toolCount: 0,
           favoriteCount: 0
         }
-        
-        console.log('✅ 获取用户信息成功:', userData.email)
-        return userData
+
+        userStore.user = userInfo
+
+        console.log('✅ 获取用户信息成功:', user.email)
+        return user
       }
-      
+
       throw new Error('用户信息无效')
     } catch (error: any) {
+      authState.value.error = error as Error
       console.error('❌ 获取用户信息失败:', error)
       // 清除无效状态
+      authState.value.user = null
       userStore.user = null
       userStore.token = null
       localStorage.removeItem('token')
       return null
+    } finally {
+      authState.value.loading = false
+    }
+  }
+
+  // 刷新token
+  const refreshToken = async () => {
+    try {
+      authState.value.loading = true
+      authState.value.error = null
+
+      const { data, error } = await supabase.auth.refreshSession()
+      if (error) throw error
+
+      if (data.session) {
+        authState.value.user = data.user
+        userStore.token = data.session.access_token
+        localStorage.setItem('token', data.session.access_token)
+
+        console.log('✅ Token 刷新成功')
+        return {
+          user: data.user,
+          session: data.session
+        }
+      }
+
+      throw new Error('刷新失败')
+    } catch (error) {
+      authState.value.error = error as Error
+      console.error('❌ Token 刷新失败:', error)
+      await logout()
+      return { error }
+    } finally {
+      authState.value.loading = false
     }
   }
 
   // 登出
   const logout = async () => {
     try {
+      authState.value.loading = true
+      authState.value.error = null
+
       console.log('🚪 用户登出')
-      
-      if (AUTH_MODE === 'sdk') {
-        // SDK模式下调用Supabase登出
-        await supabase.auth.signOut()
-      }
-      
-      // 清除本地状态
+
+      const { error } = await supabase.auth.signOut()
+      if (error) throw error
+
+      // 清除状态
+      authState.value.user = null
       userStore.user = null
       userStore.token = null
       localStorage.removeItem('token')
-      
+
       console.log('✅ 登出成功')
+      return { success: true }
     } catch (error) {
+      authState.value.error = error as Error
       console.error('❌ 登出异常:', error)
       // 即使出错也要清除本地状态
+      authState.value.user = null
+      userStore.user = null
+      userStore.token = null
+      localStorage.removeItem('token')
+      return { error }
+    } finally {
+      authState.value.loading = false
+    }
+  }
+
+  // 初始化认证状态
+  const initAuth = async () => {
+    console.log('🔐 初始化认证系统...')
+
+    try {
+      // 获取初始会话
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) {
+        console.log('发现现有会话:', session.user?.email)
+        authState.value.user = session.user
+        userStore.token = session.access_token
+        localStorage.setItem('token', session.access_token)
+
+        // 同步用户信息到store
+        if (session.user) {
+          userStore.user = {
+            id: session.user.id,
+            username: session.user.user_metadata?.username || session.user.email?.split('@')[0] || '',
+            email: session.user.email || '',
+            avatar: session.user.user_metadata?.avatar_url,
+            createdAt: session.user.created_at,
+            toolCount: 0,
+            favoriteCount: 0
+          }
+        }
+      }
+
+      authState.value.loading = false
+    } catch (error) {
+      console.error('❌ 初始化认证失败:', error)
+      authState.value.user = null
+      authState.value.loading = false
       userStore.user = null
       userStore.token = null
       localStorage.removeItem('token')
     }
   }
 
-  // 初始化认证状态
-  const initAuth = async () => {
-    console.log(`🔐 初始化${AUTH_MODE.toUpperCase()}模式认证系统...`)
-    
-    try {
-      if (AUTH_MODE === 'sdk') {
-        // SDK模式：监听认证状态变化
-        supabase.auth.onAuthStateChange(async (event, session) => {
-          console.log('认证状态变化:', event, session?.user?.email)
-          
-          if (event === 'SIGNED_IN' && session) {
-            userStore.token = session.access_token
-            localStorage.setItem('token', session.access_token)
-            await fetchUserProfile()
-          } else if (event === 'SIGNED_OUT') {
-            userStore.user = null
-            userStore.token = null
-            localStorage.removeItem('token')
-          } else if (event === 'TOKEN_REFRESHED' && session) {
-            userStore.token = session.access_token
-            localStorage.setItem('token', session.access_token)
-          }
-        })
-        
-        // 检查当前会话
-        const { data: { session } } = await supabase.auth.getSession()
-        if (session) {
-          console.log('发现现有会话:', session.user?.email)
+  // 监听认证状态变化
+  onMounted(() => {
+    // 初始化
+    initAuth()
+
+    // 订阅认证状态变化
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('认证状态变化:', event, session?.user?.email)
+
+        if (event === 'SIGNED_IN' && session) {
+          authState.value.user = session.user
           userStore.token = session.access_token
           localStorage.setItem('token', session.access_token)
-          await fetchUserProfile()
-        }
-      } else {
-        // HTTP模式：检查localStorage中的token
-        const token = localStorage.getItem('token')
-        if (token) {
-          console.log('🔍 找到token，验证有效性...')
-          userStore.token = token
-          await fetchUserProfile(token)
+
+          if (session.user) {
+            userStore.user = {
+              id: session.user.id,
+              username: session.user.user_metadata?.username || session.user.email?.split('@')[0] || '',
+              email: session.user.email || '',
+              avatar: session.user.user_metadata?.avatar_url,
+              createdAt: session.user.created_at,
+              toolCount: 0,
+              favoriteCount: 0
+            }
+          }
+        } else if (event === 'SIGNED_OUT') {
+          authState.value.user = null
+          userStore.user = null
+          userStore.token = null
+          localStorage.removeItem('token')
+        } else if (event === 'TOKEN_REFRESHED' && session) {
+          authState.value.user = session.user
+          userStore.token = session.access_token
+          localStorage.setItem('token', session.access_token)
         }
       }
-    } catch (error) {
-      console.error('❌ 初始化认证失败:', error)
-      userStore.user = null
-      userStore.token = null
-      localStorage.removeItem('token')
+    )
+
+    // 自动刷新 token (每23小时刷新一次，Supabase token 默认24小时过期)
+    const autoRefresh = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) {
+        await refreshToken()
+      }
     }
-  }
+
+    const refreshInterval = setInterval(autoRefresh, 23 * 60 * 60 * 1000)
+
+    // 清理订阅
+    return () => {
+      subscription.unsubscribe()
+      clearInterval(refreshInterval)
+    }
+  })
 
   // 检查是否需要认证
   const requireAuth = () => {
@@ -490,10 +423,13 @@ export function useAuth() {
 
   return {
     // 状态
+    loading: isLoading,
+    user: currentUser,
+    error: computed(() => authState.value.error),
     isLoading,
     isAuthenticated,
     currentUser,
-    
+
     // 方法
     login,
     register,
@@ -501,10 +437,8 @@ export function useAuth() {
     sendPasswordResetEmail,
     resetPassword,
     fetchUserProfile,
+    refreshToken,
     initAuth,
-    requireAuth,
-    
-    // 配置
-    authMode: AUTH_MODE
+    requireAuth
   }
 }

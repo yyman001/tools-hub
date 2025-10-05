@@ -64,7 +64,7 @@
         <!-- 认证模式显示 -->
         <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3">
           <p class="text-xs text-gray-600 dark:text-gray-400">
-            认证模式: {{ authMode.toUpperCase() }} | Token状态: {{ tokenStatus }}
+            认证模式: SDK | Token状态: {{ tokenStatus }}
           </p>
         </div>
 
@@ -111,7 +111,7 @@ import { useAuth } from '@/composables/useAuth'
 
 const router = useRouter()
 const { t } = useI18n()
-const { resetPassword, isLoading, authMode } = useAuth()
+const { resetPassword, isLoading } = useAuth()
 
 const form = ref({
   password: '',
@@ -145,7 +145,7 @@ const handleResetPassword = async () => {
     return
   }
 
-  if (!hasValidToken.value && authMode === 'http') {
+  if (!hasValidToken.value) {
     errorMessage.value = '没有有效的重置token'
     return
   }
@@ -177,18 +177,13 @@ const handleResetPassword = async () => {
 
 // 页面加载时处理
 onMounted(async () => {
-  console.log(`📄 重置密码页面加载 (${authMode.toUpperCase()}模式)`)
+  console.log('📄 重置密码页面加载 (SDK模式)')
   
   try {
-    if (authMode === 'http') {
-      // HTTP模式：从URL提取token
-      const hash = window.location.hash.substring(1)
-      if (!hash) {
-        tokenStatus.value = '❌ 没有hash参数'
-        errorMessage.value = '没有找到重置token，请重新申请密码重置'
-        return
-      }
-      
+    // SDK模式：从URL提取token或检查会话状态
+    const hash = window.location.hash.substring(1)
+    if (hash) {
+      // 从URL提取token
       const params = new URLSearchParams(hash)
       accessToken = params.get('access_token') || ''
       const type = params.get('type') || ''
@@ -208,7 +203,7 @@ onMounted(async () => {
       tokenStatus.value = '✅ 找到有效token'
       hasValidToken.value = true
     } else {
-      // SDK模式：检查会话状态
+      // 检查会话状态
       tokenStatus.value = '✅ SDK模式'
       hasValidToken.value = true
     }

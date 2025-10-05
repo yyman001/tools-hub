@@ -6,63 +6,95 @@
       </div>
       
       <form @submit.prevent="handleSubmit" class="card space-y-6">
-        <!-- 工具名称 -->
-        <div class="space-y-4">
-          <div>
-            <label for="name_zh" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
-              {{ $t('addTool.toolNameZh') }} *
-            </label>
-            <input
-              id="name_zh"
-              v-model="form.name_zh"
-              type="text"
-              required
-              class="input-field"
-              :placeholder="$t('addTool.toolNameZhPlaceholder')"
-            >
+        <!-- 中英文内容 Tab 切换 -->
+        <div>
+          <div class="border-b border-gray-200 dark:border-gray-700">
+            <nav class="-mb-px flex space-x-8">
+              <button
+                type="button"
+                @click="activeTab = 'zh'"
+                :class="[
+                  'py-2 px-1 border-b-2 font-medium text-sm',
+                  activeTab === 'zh'
+                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                ]"
+              >
+                中文内容 *
+              </button>
+              <button
+                type="button"
+                @click="activeTab = 'en'"
+                :class="[
+                  'py-2 px-1 border-b-2 font-medium text-sm',
+                  activeTab === 'en'
+                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                ]"
+              >
+                English Content *
+              </button>
+            </nav>
           </div>
-          <div>
-            <label for="name_en" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
-              {{ $t('addTool.toolNameEn') }} *
-            </label>
-            <input
-              id="name_en"
-              v-model="form.name_en"
-              type="text"
-              required
-              class="input-field"
-              :placeholder="$t('addTool.toolNameEnPlaceholder')"
-            >
+
+          <!-- 中文内容 -->
+          <div v-show="activeTab === 'zh'" class="pt-6 space-y-4">
+            <div>
+              <label for="name_zh" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                {{ $t('addTool.toolNameZh') }} *
+              </label>
+              <input
+                id="name_zh"
+                v-model="form.name_zh"
+                type="text"
+                required
+                class="input-field"
+                :placeholder="$t('addTool.toolNameZhPlaceholder')"
+              >
+            </div>
+            <div>
+              <label for="description_zh" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                {{ $t('addTool.toolDescriptionZh') }} *
+              </label>
+              <textarea
+                id="description_zh"
+                v-model="form.description_zh"
+                required
+                rows="4"
+                class="input-field"
+                :placeholder="$t('addTool.toolDescriptionZhPlaceholder')"
+              ></textarea>
+            </div>
           </div>
-        </div>
-        
-        <!-- 工具描述 -->
-        <div class="space-y-4">
-          <div>
-            <label for="description_zh" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
-              {{ $t('addTool.toolDescriptionZh') }} *
-            </label>
-            <textarea
-              id="description_zh"
-              v-model="form.description_zh"
-              required
-              rows="4"
-              class="input-field"
-              :placeholder="$t('addTool.toolDescriptionZhPlaceholder')"
-            ></textarea>
-          </div>
-          <div>
-            <label for="description_en" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
-              {{ $t('addTool.toolDescriptionEn') }} *
-            </label>
-            <textarea
-              id="description_en"
-              v-model="form.description_en"
-              required
-              rows="4"
-              class="input-field"
-              :placeholder="$t('addTool.toolDescriptionEnPlaceholder')"
-            ></textarea>
+
+          <!-- 英文内容 -->
+          <div v-show="activeTab === 'en'" class="pt-6 space-y-4">
+            <div>
+              <label for="name_en" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                {{ $t('addTool.toolNameEn') }} *
+              </label>
+              <input
+                id="name_en"
+                v-model="form.name_en"
+                type="text"
+                required
+                class="input-field"
+                :placeholder="$t('addTool.toolNameEnPlaceholder')"
+              >
+            </div>
+            <div>
+              <label for="description_en" class="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
+                {{ $t('addTool.toolDescriptionEn') }} *
+              </label>
+              <textarea
+                id="description_en"
+                v-model="form.description_en"
+                required
+                rows="4"
+                class="input-field"
+                :placeholder="$t('addTool.toolDescriptionEnPlaceholder')"
+              ></textarea>
+            </div>
           </div>
         </div>
         
@@ -381,6 +413,9 @@ const router = useRouter()
 const toolStore = useToolStore()
 const categoryStore = useCategoryStore()
 const { t, locale } = useI18n()
+
+// Tab 切换状态
+const activeTab = ref('zh')
 
 const form = ref({
   name_zh: '',

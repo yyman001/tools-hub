@@ -292,5 +292,46 @@
     "powerful": "Powerful feature set with rich options",
     "crossPlatform": "Cross-platform support with excellent compatibility",
     "community": "Active community support and regular updates"
+  },
+  "legal": {
+    "cookiePolicy": {
+      "title": "Cookie Policy",
+      "lastUpdated": "Last Updated",
+      "whatAreCookies": "What are Cookies",
+      "cookiesDescription": "Cookies are small text files stored on your device to improve your browsing experience. We use cookies to remember your preferences, analyze website usage, and provide personalized content.",
+      "howWeUseCookies": "How We Use Cookies",
+      "essentialCookies": "Essential Cookies",
+      "essentialDescription": "These cookies are essential for the website to function properly, including user authentication, security features, and basic website functionality.",
+      "functionalCookies": "Functional Cookies",
+      "functionalDescription": "These cookies remember your preferences such as language selection and theme mode to provide a better user experience.",
+      "analyticsCookies": "Analytics Cookies",
+      "analyticsDescription": "These cookies help us understand how visitors use our website so we can improve website performance and user experience.",
+      "manageCookies": "Manage Cookies",
+      "manageDescription": "You can manage or delete cookies through your browser settings. Please note that disabling certain cookies may affect website functionality.",
+      "contact": "Contact Us",
+      "contactDescription": "If you have any questions about our Cookie Policy, please contact us via email."
+    },
+    "disclaimer": {
+      "title": "Disclaimer",
+      "lastUpdated": "Last Updated",
+      "generalDisclaimer": "General Disclaimer",
+      "generalDescription": "The information provided on this website is for general reference purposes only. We strive to keep the information accurate and up-to-date, but make no guarantees about the completeness, accuracy, or reliability of the information.",
+      "toolsDisclaimer": "Tools Disclaimer",
+      "toolsDescription": "The tools and resources listed on this website are from third-party developers. We are not responsible for the functionality, security, or availability of these tools. Please assess the risks before use.",
+      "externalLinks": "External Links",
+      "externalLinksDescription": "This website may contain links to external websites. We are not responsible for the content, privacy policies, or practices of these external websites.",
+      "limitationOfLiability": "Limitation of Liability",
+      "limitationDescription": "Under no circumstances shall we be liable for any direct, indirect, incidental, or consequential damages arising from the use of this website.",
+      "changes": "Changes",
+      "changesDescription": "We reserve the right to modify this disclaimer at any time. The modified version will be posted on this page and will take effect immediately."
+    }
+  },
+  "cookie": {
+    "consent": {
+      "message": "We use cookies to improve your browsing experience. By continuing to use this website, you agree to our use of cookies.",
+      "learnMore": "Learn more",
+      "acceptAll": "Accept All",
+      "essentialOnly": "Essential Only"
+    }
   }
 }

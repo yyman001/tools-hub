@@ -292,5 +292,46 @@
     "powerful": "强大的功能集和丰富的选项",
     "crossPlatform": "跨平台支持，兼容性良好",
     "community": "活跃的社区支持和定期更新"
+  },
+  "legal": {
+    "cookiePolicy": {
+      "title": "Cookie 政策",
+      "lastUpdated": "最后更新",
+      "whatAreCookies": "什么是 Cookie",
+      "cookiesDescription": "Cookie 是存储在您设备上的小型文本文件，用于改善您的浏览体验。我们使用 Cookie 来记住您的偏好设置、分析网站使用情况并提供个性化内容。",
+      "howWeUseCookies": "我们如何使用 Cookie",
+      "essentialCookies": "必要 Cookie",
+      "essentialDescription": "这些 Cookie 对网站正常运行至关重要，包括用户认证、安全功能和基本网站功能。",
+      "functionalCookies": "功能性 Cookie",
+      "functionalDescription": "这些 Cookie 用于记住您的偏好设置，如语言选择、主题模式等，以提供更好的用户体验。",
+      "analyticsCookies": "分析 Cookie",
+      "analyticsDescription": "这些 Cookie 帮助我们了解访问者如何使用我们的网站，以便我们改进网站性能和用户体验。",
+      "manageCookies": "管理 Cookie",
+      "manageDescription": "您可以通过浏览器设置管理或删除 Cookie。请注意，禁用某些 Cookie 可能会影响网站功能。",
+      "contact": "联系我们",
+      "contactDescription": "如果您对我们的 Cookie 政策有任何疑问，请通过邮件联系我们。"
+    },
+    "disclaimer": {
+      "title": "免责声明",
+      "lastUpdated": "最后更新",
+      "generalDisclaimer": "一般免责声明",
+      "generalDescription": "本网站提供的信息仅供一般参考用途。我们努力保持信息的准确性和及时性，但不对信息的完整性、准确性或可靠性做出任何保证。",
+      "toolsDisclaimer": "工具免责声明",
+      "toolsDescription": "本网站收录的工具和资源来自第三方开发者。我们不对这些工具的功能、安全性或可用性承担责任。使用前请自行评估风险。",
+      "externalLinks": "外部链接",
+      "externalLinksDescription": "本网站可能包含指向外部网站的链接。我们对这些外部网站的内容、隐私政策或做法不承担责任。",
+      "limitationOfLiability": "责任限制",
+      "limitationDescription": "在任何情况下，我们都不对因使用本网站而产生的任何直接、间接、偶然或后果性损害承担责任。",
+      "changes": "变更",
+      "changesDescription": "我们保留随时修改本免责声明的权利。修改后的版本将在本页面发布，并立即生效。"
+    }
+  },
+  "cookie": {
+    "consent": {
+      "message": "我们使用 Cookie 来改善您的浏览体验。继续使用本网站即表示您同意我们的 Cookie 使用。",
+      "learnMore": "了解更多",
+      "acceptAll": "接受所有",
+      "essentialOnly": "仅必要"
+    }
   }
 }

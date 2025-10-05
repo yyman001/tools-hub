@@ -86,6 +86,18 @@ const routes: RouteRecordRaw[] = [
     name: 'DarkModeDemo',
     component: () => import('@/views/DarkModeDemo.vue'),
     meta: { title: '暗模式演示' }
+  },
+  {
+    path: '/cookie-policy',
+    name: 'CookiePolicy',
+    component: () => import('@/views/legal/CookiePolicy.vue'),
+    meta: { title: 'Cookie 政策' }
+  },
+  {
+    path: '/disclaimer',
+    name: 'Disclaimer',
+    component: () => import('@/views/legal/Disclaimer.vue'),
+    meta: { title: '免责声明' }
   }
 ]
 

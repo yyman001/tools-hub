@@ -87,7 +87,10 @@
     "filterByCategory": "Filter by Category",
     "filterAndSort": "Filter & Sort",
     "showAll": "Show All",
-    "resultsCount": "{0} results"
+    "resultsCount": "{0} results",
+    "categoryTools": "Category Tools",
+    "expandCategory": "Expand Category",
+    "collapseCategory": "Collapse Category"
   },
   "categories": {
     "title": "Tool Categories",

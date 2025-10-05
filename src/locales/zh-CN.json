@@ -87,7 +87,10 @@
     "filterByCategory": "按分类筛选",
     "filterAndSort": "筛选和排序",
     "showAll": "显示全部",
-    "resultsCount": "共 {0} 个结果"
+    "resultsCount": "共 {0} 个结果",
+    "categoryTools": "分类工具",
+    "expandCategory": "展开分类",
+    "collapseCategory": "收起分类"
   },
   "categories": {
     "title": "工具分类",

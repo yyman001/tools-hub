@@ -61,6 +61,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { supabase } from '@/lib/supabase'
+import { getOAuthRedirectUrl, logEnvironmentInfo } from '@/utils/environment'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -69,18 +70,8 @@ const isLoading = ref(false)
 const loadingProvider = ref<'google' | 'github' | null>(null)
 const errorMessage = ref('')
 
-// 获取重定向URL
-const getRedirectUrl = (): string => {
-  const currentUrl = window.location.origin
-  
-  // 开发环境检测
-  if (currentUrl.includes('localhost') || currentUrl.includes('127.0.0.1')) {
-    return `${currentUrl}/auth/callback`
-  }
-  
-  // 生产环境
-  return `${currentUrl}/auth/callback`
-}
+// 初始化时输出环境信息
+logEnvironmentInfo()
 
 // Google 登录
 const handleGoogleLogin = async () => {
@@ -94,7 +85,7 @@ const handleGoogleLogin = async () => {
     console.log('🔐 开始 Google 登录...')
     
     // 获取当前环境的重定向URL
-    const redirectTo = getRedirectUrl()
+    const redirectTo = getOAuthRedirectUrl()
     
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -135,7 +126,7 @@ const handleGitHubLogin = async () => {
     console.log('🔐 开始 GitHub 登录...')
     
     // 获取当前环境的重定向URL
-    const redirectTo = getRedirectUrl()
+    const redirectTo = getOAuthRedirectUrl()
     
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'github',

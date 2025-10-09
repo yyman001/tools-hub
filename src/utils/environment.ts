@@ -1,69 +1,127 @@
-// 环境配置工具
+// 环境检测和配置工具
 
 /**
- * 获取当前应用的基础URL
+ * 检测当前运行环境
  */
-export const getBaseUrl = (): string => {
-  // 在浏览器环境中，使用当前页面的origin
-  if (typeof window !== 'undefined') {
-    return window.location.origin
+export const getEnvironment = () => {
+  const hostname = window.location.hostname
+  const protocol = window.location.protocol
+  const port = window.location.port
+  
+  // 开发环境检测
+  if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.includes('.local')) {
+    return 'development'
   }
   
-  // 在服务端或测试环境中，使用环境变量或默认值
-  const protocol = import.meta.env.VITE_APP_PROTOCOL || 'http'
-  const host = import.meta.env.VITE_APP_HOST || 'localhost'
-  const port = import.meta.env.VITE_APP_PORT || '3000'
+  // 预览/测试环境检测（如 Vercel 预览部署）
+  if (hostname.includes('vercel.app') || hostname.includes('netlify.app') || hostname.includes('surge.sh')) {
+    return 'preview'
+  }
   
-  return `${protocol}://${host}:${port}`
+  // 生产环境
+  return 'production'
 }
 
 /**
- * 获取密码重置的重定向URL
+ * 获取当前域名信息
+ */
+export const getDomainInfo = () => {
+  const origin = window.location.origin
+  const hostname = window.location.hostname
+  const protocol = window.location.protocol
+  const port = window.location.port
+  const environment = getEnvironment()
+  
+  return {
+    origin,
+    hostname,
+    protocol,
+    port,
+    environment,
+    isSecure: protocol === 'https:',
+    isDevelopment: environment === 'development',
+    isProduction: environment === 'production'
+  }
+}
+
+/**
+ * 获取 OAuth 重定向 URL
+ */
+export const getOAuthRedirectUrl = (path: string = '/auth/callback'): string => {
+  const domainInfo = getDomainInfo()
+  
+  console.log('🌐 域名信息:', domainInfo)
+  
+  // 开发环境
+  if (domainInfo.isDevelopment) {
+    const redirectUrl = `${domainInfo.origin}${path}`
+    console.log('🔧 开发环境重定向URL:', redirectUrl)
+    return redirectUrl
+  }
+  
+  // 生产环境 - 确保使用 HTTPS
+  let redirectUrl = domainInfo.origin
+  
+  // 如果不是 HTTPS，强制转换为 HTTPS
+  if (!domainInfo.isSecure && domainInfo.isProduction) {
+    redirectUrl = redirectUrl.replace('http://', 'https://')
+    console.log('🔒 强制使用 HTTPS:', redirectUrl)
+  }
+  
+  const finalUrl = `${redirectUrl}${path}`
+  console.log('🚀 生产环境重定向URL:', finalUrl)
+  
+  return finalUrl
+}
+
+/**
+ * 获取密码重置 URL
  */
 export const getPasswordResetUrl = (): string => {
-  return `${getBaseUrl()}/reset-password`
+  return getOAuthRedirectUrl('/reset-password')
 }
 
 /**
- * 获取邮箱验证的重定向URL
+ * 检查是否为安全连接
  */
-export const getEmailVerificationUrl = (): string => {
-  return `${getBaseUrl()}/email-verification`
+export const isSecureConnection = (): boolean => {
+  return window.location.protocol === 'https:' || window.location.hostname === 'localhost'
 }
 
 /**
- * 检查是否为开发环境
+ * 获取 Supabase 配置
  */
-export const isDevelopment = (): boolean => {
-  return import.meta.env.DEV
-}
-
-/**
- * 检查是否为生产环境
- */
-export const isProduction = (): boolean => {
-  return import.meta.env.PROD
-}
-
-/**
- * 获取应用配置信息
- */
-export const getAppConfig = () => {
+export const getSupabaseConfig = () => {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+  
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('❌ Supabase 配置缺失')
+    throw new Error('Supabase 配置缺失，请检查环境变量')
+  }
+  
+  console.log('✅ Supabase 配置:', {
+    url: supabaseUrl,
+    hasAnonKey: !!supabaseAnonKey
+  })
+  
   return {
-    baseUrl: getBaseUrl(),
-    isDev: isDevelopment(),
-    isProd: isProduction(),
-    passwordResetUrl: getPasswordResetUrl(),
-    emailVerificationUrl: getEmailVerificationUrl()
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey
   }
 }
 
 /**
- * 打印当前环境配置（仅在开发环境）
+ * 调试信息输出
  */
 export const logEnvironmentInfo = () => {
-  if (isDevelopment()) {
-    const config = getAppConfig()
-    console.log('🌍 环境配置信息:', config)
-  }
+  const domainInfo = getDomainInfo()
+  const supabaseConfig = getSupabaseConfig()
+  
+  console.group('🔍 环境信息')
+  console.log('域名信息:', domainInfo)
+  console.log('Supabase URL:', supabaseConfig.url)
+  console.log('OAuth 重定向URL:', getOAuthRedirectUrl())
+  console.log('密码重置URL:', getPasswordResetUrl())
+  console.groupEnd()
 }

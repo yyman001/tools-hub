@@ -121,6 +121,12 @@ const routes: RouteRecordRaw[] = [
     meta: { title: 'OAuth 登录成功' }
   },
   {
+    path: '/config-check',
+    name: 'ConfigCheck',
+    component: () => import('@/views/ConfigCheck.vue'),
+    meta: { title: 'OAuth 配置检查' }
+  },
+  {
     path: '/cookie-policy',
     name: 'CookiePolicy',
     component: () => import('@/views/legal/CookiePolicy.vue'),

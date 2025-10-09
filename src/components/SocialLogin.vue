@@ -69,6 +69,19 @@ const isLoading = ref(false)
 const loadingProvider = ref<'google' | 'github' | null>(null)
 const errorMessage = ref('')
 
+// 获取重定向URL
+const getRedirectUrl = (): string => {
+  const currentUrl = window.location.origin
+  
+  // 开发环境检测
+  if (currentUrl.includes('localhost') || currentUrl.includes('127.0.0.1')) {
+    return `${currentUrl}/auth/callback`
+  }
+  
+  // 生产环境
+  return `${currentUrl}/auth/callback`
+}
+
 // Google 登录
 const handleGoogleLogin = async () => {
   if (isLoading.value) return
@@ -80,10 +93,13 @@ const handleGoogleLogin = async () => {
   try {
     console.log('🔐 开始 Google 登录...')
     
+    // 获取当前环境的重定向URL
+    const redirectTo = getRedirectUrl()
+    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
@@ -95,7 +111,7 @@ const handleGoogleLogin = async () => {
       console.error('Google 登录失败:', error)
       errorMessage.value = getAuthErrorMessage(error)
     } else {
-      console.log('Google 登录请求已发送')
+      console.log('Google 登录请求已发送，重定向到:', redirectTo)
       // OAuth 登录会重定向，不需要手动处理跳转
     }
   } catch (error: any) {
@@ -118,10 +134,14 @@ const handleGitHubLogin = async () => {
   try {
     console.log('🔐 开始 GitHub 登录...')
     
+    // 获取当前环境的重定向URL
+    const redirectTo = getRedirectUrl()
+    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo,
+        scopes: 'user:email', // 确保获取邮箱权限
       }
     })
 
@@ -129,7 +149,7 @@ const handleGitHubLogin = async () => {
       console.error('GitHub 登录失败:', error)
       errorMessage.value = getAuthErrorMessage(error)
     } else {
-      console.log('GitHub 登录请求已发送')
+      console.log('GitHub 登录请求已发送，重定向到:', redirectTo)
       // OAuth 登录会重定向，不需要手动处理跳转
     }
   } catch (error: any) {

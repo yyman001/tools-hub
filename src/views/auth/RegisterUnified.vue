@@ -12,6 +12,9 @@
           </router-link>
         </p>
       </div>
+
+      <!-- 第三方登录 -->
+      <SocialLogin />
       
       <form class="mt-8 space-y-6" @submit.prevent="handleRegister">
         <div class="space-y-4">
@@ -109,6 +112,7 @@ import { useAuth } from '@/composables/useAuth'
 import RegistrationSuccess from '@/components/RegistrationSuccess.vue'
 import EmailInput from '@/components/EmailInput.vue'
 import PasswordInput from '@/components/PasswordInput.vue'
+import SocialLogin from '@/components/SocialLogin.vue'
 
 const router = useRouter()
 const { t } = useI18n()

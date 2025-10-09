@@ -71,6 +71,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/auth/ResetPasswordUnified.vue'),
     meta: { title: '重置密码' }
   },
+  {
+    path: '/auth/callback',
+    name: 'AuthCallback',
+    component: () => import('@/views/auth/AuthCallback.vue'),
+    meta: { title: '登录处理中' }
+  },
 
   {
     path: '/profile',

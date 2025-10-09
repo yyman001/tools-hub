@@ -150,6 +150,32 @@
           </div>
         </div>
 
+        <!-- 第三方登录演示 -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-slate-100 mb-4">
+            第三方登录
+          </h2>
+          <p class="text-muted mb-6">
+            支持 Google 和 GitHub 第三方登录
+          </p>
+          
+          <div class="space-y-4">
+            <SocialLogin />
+            
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+              <h3 class="font-medium text-gray-900 dark:text-slate-100 mb-2">功能特点：</h3>
+              <ul class="text-sm text-muted space-y-1">
+                <li>• 支持 Google OAuth 登录</li>
+                <li>• 支持 GitHub OAuth 登录</li>
+                <li>• 自动获取用户头像和基本信息</li>
+                <li>• 安全的 OAuth 2.0 流程</li>
+                <li>• 与 Supabase 深度集成</li>
+                <li>• 支持回调处理和错误处理</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         <!-- 完整登录表单演示 -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
           <h2 class="text-2xl font-semibold text-gray-900 dark:text-slate-100 mb-4">
@@ -226,6 +252,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRememberPassword } from '@/composables/useRememberPassword'
 import EmailInput from '@/components/EmailInput.vue'
 import PasswordInput from '@/components/PasswordInput.vue'
+import SocialLogin from '@/components/SocialLogin.vue'
 
 const { saveCredentials, initializeCredentials, clearSavedCredentials, hasSavedCredentials } = useRememberPassword()
 

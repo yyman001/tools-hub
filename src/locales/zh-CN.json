@@ -124,6 +124,22 @@
     "registering": "注册中...",
     "forgotPasswordLink": "忘记密码？",
     "rememberPassword": "记住密码",
+    "social": {
+      "continueWithGoogle": "使用 Google 继续",
+      "continueWithGitHub": "使用 GitHub 继续",
+      "orContinueWith": "或",
+      "signingIn": "登录中..."
+    },
+    "callback": {
+      "processing": "正在处理登录",
+      "processingDescription": "请稍候，我们正在验证您的身份...",
+      "success": "登录成功！",
+      "successDescription": "欢迎回来！正在为您跳转...",
+      "redirecting": "正在跳转到首页...",
+      "error": "登录失败",
+      "retry": "重试",
+      "backToLogin": "返回登录页面"
+    },
     "errors": {
       "required": "请填写完整信息",
       "passwordMismatch": "两次输入的密码不一致",

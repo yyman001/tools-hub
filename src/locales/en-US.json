@@ -124,6 +124,22 @@
     "registering": "Registering...",
     "forgotPasswordLink": "Forgot Password?",
     "rememberPassword": "Remember Password",
+    "social": {
+      "continueWithGoogle": "Continue with Google",
+      "continueWithGitHub": "Continue with GitHub",
+      "orContinueWith": "or",
+      "signingIn": "Signing in..."
+    },
+    "callback": {
+      "processing": "Processing Login",
+      "processingDescription": "Please wait while we verify your identity...",
+      "success": "Login Successful!",
+      "successDescription": "Welcome back! Redirecting you now...",
+      "redirecting": "Redirecting to homepage...",
+      "error": "Login Failed",
+      "retry": "Retry",
+      "backToLogin": "Back to Login"
+    },
     "errors": {
       "required": "Please fill in all required fields",
       "passwordMismatch": "Passwords do not match",
